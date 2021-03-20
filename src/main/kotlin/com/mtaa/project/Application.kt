@@ -5,12 +5,23 @@ import io.ktor.routing.*
 import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.*
+import io.ktor.network.tls.certificates.*
 import io.ktor.request.*
 import org.jetbrains.exposed.sql.Database
+import java.io.File
 import java.text.DateFormat
 
-fun main(args: Array<String>): Unit =
-        io.ktor.server.netty.EngineMain.main(args)
+fun main(args: Array<String>) {
+    val jksFile = File("build/temporary.jks").apply {
+        parentFile.mkdirs()
+    }
+
+    if (!jksFile.exists()) {
+        generateCertificate(jksFile) // Generates the certificate
+    }
+
+    io.ktor.server.netty.EngineMain.main(args)
+}
 
 fun Application.module() {
 
@@ -30,7 +41,7 @@ fun Application.module() {
     //Set up database connection
     Database.connect(
         "jdbc:postgresql://localhost:5433/mtaa?currentSchema=mtaa", driver = "org.postgresql.Driver",
-        user = "postgres", password = "root"
+        user = "techtalk", password = "mtaaTechTalk0120"
     )
 
 }

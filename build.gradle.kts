@@ -1,3 +1,4 @@
+import org.jetbrains.kotlin.contracts.model.structure.UNKNOWN_COMPUTATION.type
 import org.jetbrains.kotlin.gradle.dsl.Coroutines
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -35,5 +36,14 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-jdbc:0.29.1")
     implementation("org.postgresql:postgresql:42.2.19.jre7")
     implementation("io.ktor:ktor-gson:$ktor_version")
+    implementation("io.ktor:ktor-network-tls-certificates:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
+
+task("generateJks", JavaExec::class) {
+    dependsOn("classes")
+    main = "io.ktor.samples.http2.CertificateGenerator"
+    classpath = sourceSets["main"].runtimeClasspath
+}
+
+getTasksByName("run", false).first().dependsOn("generateJks")
