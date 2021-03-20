@@ -10,7 +10,7 @@ plugins {
     kotlin("jvm") version "1.4.10"
 }
 
-group = "com.mtaa.random"
+group = "com.mtaa.project"
 version = "0.0.1"
 application {
     mainClass.set("io.ktor.server.netty.EngineMain")
@@ -34,5 +34,6 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.29.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.29.1")
     implementation("org.postgresql:postgresql:42.2.19.jre7")
+    implementation("io.ktor:ktor-gson:$ktor_version")
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
