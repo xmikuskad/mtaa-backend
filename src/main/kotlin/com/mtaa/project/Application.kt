@@ -6,7 +6,6 @@ import io.ktor.application.*
 import io.ktor.features.*
 import io.ktor.gson.*
 import io.ktor.network.tls.certificates.*
-import io.ktor.request.*
 import org.jetbrains.exposed.sql.Database
 import java.io.File
 import java.text.DateFormat
@@ -43,32 +42,6 @@ fun Application.module() {
         "jdbc:postgresql://localhost:5433/mtaa?currentSchema=mtaa", driver = "org.postgresql.Driver",
         user = "techtalk", password = "mtaaTechTalk0120"
     )
-
 }
 
-//Auth methods TODO move to other file?
-
-fun isAuthenticated(call:ApplicationCall):Boolean {
-    val header: String? = call.request.header("auth")
-    return if(header!=null) {
-        //TODO check token
-        print("Pog");
-        true;
-    }
-    else {
-        false;
-    }
-}
-
-fun isAdmin(call:ApplicationCall):Boolean {
-    val header: String? = call.request.header("auth")
-    return if(header!=null) {
-        //TODO check token
-        print("Pog");
-        true;
-    }
-    else {
-        false;
-    }
-}
 
