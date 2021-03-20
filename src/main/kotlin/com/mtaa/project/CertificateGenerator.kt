@@ -1,4 +1,4 @@
-package com.mtaa.project.routing
+package com.mtaa.project
 
 import io.ktor.network.tls.certificates.generateCertificate
 import java.io.File
