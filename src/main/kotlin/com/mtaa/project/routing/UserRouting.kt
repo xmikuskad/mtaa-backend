@@ -105,7 +105,7 @@ fun Route.userRouting() {
             try {
                 val data = call.receive<RegisterInfo>()
                 transaction {
-                    addUser(data.name, data.password, data.email, 0)
+                    createUser(data.name, data.password, data.email, 0)
                 }
                 call.respond(HttpStatusCode.OK)
             } catch (e: Exception) { //If body doesnt contain all variables

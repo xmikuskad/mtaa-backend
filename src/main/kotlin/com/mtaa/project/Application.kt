@@ -1,5 +1,6 @@
 package com.mtaa.project
 
+import com.mtaa.project.routing.brandRouting
 import com.mtaa.project.routing.userRouting
 import io.ktor.routing.*
 import io.ktor.application.*
@@ -7,6 +8,7 @@ import io.ktor.features.*
 import io.ktor.gson.*
 import io.ktor.network.tls.certificates.*
 import org.jetbrains.exposed.sql.Database
+import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.text.DateFormat
 
@@ -35,6 +37,7 @@ fun Application.module() {
     //Set rest api points
     routing {
         userRouting()
+        brandRouting()
     }
 
     //Set up database connection
@@ -42,6 +45,10 @@ fun Application.module() {
         "jdbc:postgresql://localhost:5433/mtaa?currentSchema=mtaa", driver = "org.postgresql.Driver",
         user = "techtalk", password = "mtaaTechTalk0120"
     )
+
+    transaction {
+        deleteBrand(1)
+    }
 }
 
 
