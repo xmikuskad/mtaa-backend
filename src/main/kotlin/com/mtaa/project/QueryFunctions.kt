@@ -1,12 +1,12 @@
 package com.mtaa.project
 
-import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.deleteWhere
-import org.jetbrains.exposed.sql.select
+import com.mtaa.project.Brands.name
+import org.jetbrains.exposed.sql.*
 
 /**
  * User queries
  */
+const val PAGE_LIMIT = 5 //number of products loading in one batch
 
 fun createUser(_name:String, _password:String, _email:String, _trust_score:Int,) {
     User.new {
@@ -43,14 +43,55 @@ fun createBrand(_name:String) {
 fun deleteBrand(_id:Int):Boolean {
     val brand = Brand.find { Brands.id eq _id }.firstOrNull() ?: return false
 
-    /*val query = CategoriesBrands.innerJoin(Brands)
-        .slice(CategoriesBrands.columns)
-        .select{CategoriesBrands.brand eq brand.id}
-
-    query.forEach { println(it) }*/
-
     CategoriesBrands.deleteWhere { CategoriesBrands.brand eq brand.id }
 
     brand.delete()
     return true
+}
+
+fun createCategory(_name:String) {
+    Category.new {
+        name = _name
+    }
+}
+
+fun deleteCategory(_id:Int):Boolean {
+    val category = Category.find { Categories.id eq _id }.firstOrNull() ?: return false
+
+    CategoriesBrands.deleteWhere { CategoriesBrands.category eq category.id }
+
+    category.delete()
+    return true
+}
+
+fun getCategoryBrands(_id: Int): List<Brand> {
+    val query = CategoriesBrands.innerJoin(Brands)
+        .slice(Brands.columns)
+        .select{CategoriesBrands.category eq _id}
+
+    return Brand.wrapRows(query).toList()
+}
+
+fun getCategoryProducts(_id:Int, paging:Int, _orderBy:String?,_orderType:String?): List<Product> {
+
+    var orderBy: Column<Int>? = null
+    when (_orderBy) {
+        "price" -> orderBy = Products.price
+        "score" -> orderBy = Products.score
+    }
+
+    val orderType:SortOrder = when (_orderType) {
+        "asc" -> SortOrder.ASC
+        "desc" -> SortOrder.DESC
+        else -> SortOrder.DESC
+    }
+
+    val products: Query = if (orderBy == null)
+        Products.select { Products.category eq _id }.orderBy(Products.id, orderType)
+            .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+    else
+        Products.select { Products.category eq _id }.orderBy(orderBy, orderType)
+            .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+
+    return Product.wrapRows(products).toList()
 }

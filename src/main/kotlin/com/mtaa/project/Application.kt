@@ -1,6 +1,7 @@
 package com.mtaa.project
 
 import com.mtaa.project.routing.brandRouting
+import com.mtaa.project.routing.categoryRouting
 import com.mtaa.project.routing.userRouting
 import io.ktor.routing.*
 import io.ktor.application.*
@@ -38,6 +39,7 @@ fun Application.module() {
     routing {
         userRouting()
         brandRouting()
+        categoryRouting()
     }
 
     //Set up database connection
@@ -45,10 +47,6 @@ fun Application.module() {
         "jdbc:postgresql://localhost:5433/mtaa?currentSchema=mtaa", driver = "org.postgresql.Driver",
         user = "techtalk", password = "mtaaTechTalk0120"
     )
-
-    transaction {
-        deleteBrand(1)
-    }
 }
 
 

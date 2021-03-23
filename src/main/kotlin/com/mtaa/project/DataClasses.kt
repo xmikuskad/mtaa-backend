@@ -14,7 +14,12 @@ data class LoginInfo(val password: String, val email:String)
 data class UserInfo(val name:String, val trust_score: Int)
 data class AuthInfo(val key:String)
 data class NameInfo(val name:String)
-
+data class CategoriesInfo(val categories:MutableList<CategoryInfo>)
+data class CategoryInfo(val name:String,val category_ID:Int)
+data class BrandInfo(val name:String,val brand_id:Int)
+data class BrandsInfo(val brands:MutableList<BrandInfo>)
+data class ProductInfo(val name:String,val score:Int,val price:Int,val product_ID:Int)
+data class ProductsInfo(val products:MutableList<ProductInfo>)
 
 /**
  * SQL data
@@ -49,7 +54,7 @@ object Categories: IntIdTable(){
 
 class Category(id:EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<Category>(Categories)
-    var name by Brands.name
+    var name by Categories.name
 }
 
 object CategoriesBrands: IntIdTable(){
@@ -61,4 +66,21 @@ class CategoryBrand(id:EntityID<Int>) : IntEntity(id) {
     companion object : IntEntityClass<CategoryBrand>(CategoriesBrands)
     var brand by Brand referencedOn CategoriesBrands.brand
     var category by Category referencedOn  CategoriesBrands.category
+}
+
+object Products : IntIdTable() {
+    val name: Column<String> = varchar("name", 255)
+    val price: Column<Int> = integer("price")
+    val score: Column<Int> = integer("score")
+    val brand = reference("brand_id",Brands)
+    val category = reference("category_id",Categories)
+}
+
+class Product(id:EntityID<Int>) : IntEntity(id) {
+    companion object: IntEntityClass<Product>(Products)
+    val name by Products.name
+    val price by Products.price
+    val score by Products.score
+    val brand by Brand referencedOn Products.brand
+    val category by Category referencedOn Products.category
 }
