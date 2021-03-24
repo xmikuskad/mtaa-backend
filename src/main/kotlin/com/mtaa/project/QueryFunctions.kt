@@ -44,6 +44,7 @@ fun deleteBrand(_id:Int):Boolean {
     val brand = Brand.find { Brands.id eq _id }.firstOrNull() ?: return false
 
     CategoriesBrands.deleteWhere { CategoriesBrands.brand eq brand.id }
+    Products.deleteWhere { Products.brand eq brand.id }
 
     brand.delete()
     return true
@@ -59,6 +60,7 @@ fun deleteCategory(_id:Int):Boolean {
     val category = Category.find { Categories.id eq _id }.firstOrNull() ?: return false
 
     CategoriesBrands.deleteWhere { CategoriesBrands.category eq category.id }
+    Products.deleteWhere { Products.category eq category.id }
 
     category.delete()
     return true

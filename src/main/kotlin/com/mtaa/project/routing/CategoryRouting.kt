@@ -25,7 +25,7 @@ fun Route.categoryRouting() {
         }
 
         get("{id}/brands") {
-            val id = call.parameters["id"]?.toInt()
+            val id = parseInt(call,"id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
@@ -50,8 +50,9 @@ fun Route.categoryRouting() {
         }
 
         get("{categoryID}/{page}") {
-            val categoryID = call.parameters["categoryID"]?.toInt()
-            val page = call.parameters["page"]?.toInt()
+            val categoryID = parseInt(call,"categoryID")
+            val page = parseInt(call,"page")
+
             if (categoryID == null || page == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
@@ -112,7 +113,7 @@ fun Route.categoryRouting() {
                 return@delete
             }
 
-            val id = call.parameters["id"]?.toInt()
+            val id = parseInt(call,"id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete

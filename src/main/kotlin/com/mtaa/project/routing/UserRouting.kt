@@ -8,6 +8,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.NullPointerException
+import java.lang.NumberFormatException
 
 fun Route.userRouting() {
 
@@ -76,6 +77,8 @@ fun Route.userRouting() {
                     is ContentTransformationException -> call.respond(HttpStatusCode.BadRequest)
                     //Some values missing in payload
                     is NullPointerException -> call.respond(HttpStatusCode.BadRequest)
+                    //Fail to parse id
+                    is NumberFormatException -> call.respond(HttpStatusCode.BadRequest)
                     else -> {
                         println(e.stackTraceToString())
                         call.respond(HttpStatusCode.InternalServerError)
@@ -86,8 +89,26 @@ fun Route.userRouting() {
         }
 
         get("{id}") {
-            val id = call.parameters["id"]?.toInt()
+            /*val id : Int?
+            try {
+                id = call.parameters["id"]?.toInt()
 
+                if (id == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@get
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    //Fail to parse id
+                    is NumberFormatException -> call.respond(HttpStatusCode.BadRequest)
+                    else -> {
+                        println(e.stackTraceToString())
+                        call.respond(HttpStatusCode.InternalServerError)
+                    }
+                }
+                return@get
+            }*/
+            val id = parseInt(call,"id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
@@ -128,7 +149,7 @@ fun Route.userRouting() {
                 return@delete
             }
 
-            val id = call.parameters["id"]?.toInt()
+            val id = parseInt(call,"id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
@@ -147,7 +168,15 @@ fun Route.userRouting() {
             } else { //If we didnt find any record to delete
                 call.respond(HttpStatusCode.NotFound)
             }
-
         }
+    }
+}
+
+fun parseInt(call:ApplicationCall ,name:String):Int? {
+    try {
+        return call.parameters[name]?.toInt() ?: return null
+    } catch (e: Exception) {             //Fail to parse id
+        println(e.stackTraceToString())
+        return null
     }
 }

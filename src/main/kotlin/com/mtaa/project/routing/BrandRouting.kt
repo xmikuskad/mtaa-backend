@@ -43,7 +43,7 @@ fun Route.brandRouting() {
                 return@delete
             }
 
-            val id = call.parameters["id"]?.toInt()
+            val id = parseInt(call,"id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete

@@ -19,7 +19,7 @@ fun main(args: Array<String>) {
     }
 
     if (!jksFile.exists()) {
-        generateCertificate(jksFile) // Generates the certificate
+        generateCertificate(jksFile) // Generates the SSL certificate
     }
 
     io.ktor.server.netty.EngineMain.main(args)
