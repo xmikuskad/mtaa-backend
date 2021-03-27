@@ -35,6 +35,11 @@ fun Route.productRouting() {
 
             try {
                 val data = call.receive<AddedProduct>()
+                // Integers not provided or less than 1
+                if (data.brand_ID <= 0 || data.category_ID <= 0 || data.price <= 0) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
                 val result = transaction {
                     addProduct(data.name, data.price, data.category_ID, data.brand_ID)
                 }
