@@ -130,3 +130,8 @@ fun addProduct(_name: String, _price: Int, category_ID: Int, brand_ID: Int): Boo
     }
     return true
 }
+
+fun searchProducts(_name: String): List<Product> {
+    val products: Query = Products.select { Products.name like "%$_name%"}
+    return Product.wrapRows(products).toList()
+}

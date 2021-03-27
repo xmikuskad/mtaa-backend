@@ -11,6 +11,36 @@ import java.lang.NullPointerException
 
 fun Route.productRouting() {
     route("/products") {
+        route("/search") {
+            post {
+                try {
+                    val productInfoList: MutableList<ProductInfo> = mutableListOf()
+                    val data = call.receive<NameInfo>()
+
+                    val productList = transaction {
+                        searchProducts(data.name)
+                    }
+                    for(product in productList){
+                        productInfoList.add(ProductInfo(product.name, product.score, product.price, product.id.toString().toInt()))
+                    }
+
+                    call.respond(ProductsInfo(productInfoList))
+                }
+                catch (e: Exception) {
+                    when (e) {
+                        //Got null payload
+                        is ContentTransformationException -> call.respond(HttpStatusCode.BadRequest)
+                        //Some values missing in payload
+                        is NullPointerException -> call.respond(HttpStatusCode.BadRequest)
+                        else -> {
+                            println(e.stackTraceToString())
+                            call.respond(HttpStatusCode.InternalServerError)
+                        }
+                    }
+                }
+            }
+        }
+
         get("{id}") {
             val id = parseInt(call,"id")
             if (id == null) {
@@ -27,6 +57,7 @@ fun Route.productRouting() {
             // Product found
             call.respond(ProductInfo(product.name, product.score, product.price, id))
         }
+
         post {
             if (!isAdmin(call)) { //Check if user is admin
                 call.respond(HttpStatusCode.Unauthorized)
@@ -62,6 +93,7 @@ fun Route.productRouting() {
             }
 
         }
+
         delete("{id}") {
             if (!isAdmin(call)) { //Check if user is admin
                 call.respond(HttpStatusCode.Unauthorized)
