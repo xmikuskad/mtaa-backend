@@ -4,7 +4,11 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
+import org.jetbrains.exposed.sql.BlobColumnType
 import org.jetbrains.exposed.sql.Column
+import org.jetbrains.exposed.sql.jodatime.datetime
+import org.jetbrains.exposed.sql.statements.api.ExposedBlob
+import org.joda.time.DateTime
 
 /**
  * REST data
@@ -19,6 +23,7 @@ data class CategoryInfo(val name:String,val category_ID:Int)
 data class BrandInfo(val name:String,val brand_id:Int)
 data class BrandsInfo(val brands:MutableList<BrandInfo>)
 data class ProductInfo(val name:String,val score:Int,val price:Int,val product_ID:Int)
+data class AddedProduct(val name: String, val price: Int, val category_ID: Int, val brand_ID: Int)
 data class ProductsInfo(val products:MutableList<ProductInfo>)
 
 /**
@@ -78,9 +83,60 @@ object Products : IntIdTable() {
 
 class Product(id:EntityID<Int>) : IntEntity(id) {
     companion object: IntEntityClass<Product>(Products)
-    val name by Products.name
-    val price by Products.price
-    val score by Products.score
-    val brand by Brand referencedOn Products.brand
-    val category by Category referencedOn Products.category
+    var name by Products.name
+    var price by Products.price
+    var score by Products.score
+    var brand by Brand referencedOn Products.brand
+    var category by Category referencedOn Products.category
+}
+
+object Reviews : IntIdTable() {
+    val text: Column<String> = varchar("text", 4095)
+    val product = reference("product_ID", Products)
+    val score: Column<Int> = integer("score")
+    val user = reference("user_ID", Users)
+    val created_at: Column<DateTime> = datetime("created_at")
+}
+
+class Review(id:EntityID<Int>) : IntEntity(id) {
+    companion object: IntEntityClass<Review>(Reviews)
+    val text by Reviews.text
+    val product by Product referencedOn Reviews.product
+    val score by Reviews.score
+    val user by User referencedOn Reviews.user
+    val created_at by Reviews.created_at
+}
+
+object ReviewAttributes : IntIdTable() {
+    val text: Column<String> = varchar("text", 255)
+    val is_positive: Column<Boolean> = bool("is_positive")
+    val review = reference("review_ID", Reviews)
+}
+
+class ReviewAttribute(id:EntityID<Int>) : IntEntity(id) {
+    val text by ReviewAttributes.text
+    val is_positive by ReviewAttributes.is_positive
+    val review by Review referencedOn ReviewAttributes.review
+}
+
+object ReviewVotes : IntIdTable() {
+    val user = reference("user_ID", Users)
+    val is_positive: Column<Boolean> = bool("is_positive")
+    val review = reference("review_ID", Reviews)
+}
+
+class ReviewVote(id:EntityID<Int>) : IntEntity(id) {
+    val user by User referencedOn ReviewVotes.user
+    val is_positive by ReviewVotes.is_positive
+    val review by Review referencedOn ReviewVotes.review
+}
+
+object Photos : IntIdTable() {
+    val src: Column<ExposedBlob> = blob("source")
+    val review = reference("review_ID", Reviews)
+}
+
+class Photo(id:EntityID<Int>) : IntEntity(id) {
+    val src by Photos.src
+    val review by Review referencedOn Photos.review
 }

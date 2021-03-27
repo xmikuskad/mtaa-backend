@@ -89,25 +89,6 @@ fun Route.userRouting() {
         }
 
         get("{id}") {
-            /*val id : Int?
-            try {
-                id = call.parameters["id"]?.toInt()
-
-                if (id == null) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@get
-                }
-            } catch (e: Exception) {
-                when (e) {
-                    //Fail to parse id
-                    is NumberFormatException -> call.respond(HttpStatusCode.BadRequest)
-                    else -> {
-                        println(e.stackTraceToString())
-                        call.respond(HttpStatusCode.InternalServerError)
-                    }
-                }
-                return@get
-            }*/
             val id = parseInt(call,"id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)

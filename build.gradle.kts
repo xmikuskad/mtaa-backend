@@ -38,6 +38,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-dao:0.29.1")
     implementation("org.jetbrains.exposed:exposed-jdbc:0.29.1")
     implementation("org.postgresql:postgresql:42.2.19.jre7")
+    implementation("org.jetbrains.exposed:exposed-jodatime:0.29.1")
 
     //json
     implementation("io.ktor:ktor-gson:$ktor_version")

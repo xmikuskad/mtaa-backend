@@ -1,6 +1,5 @@
 package com.mtaa.project
 
-import com.mtaa.project.Brands.name
 import org.jetbrains.exposed.sql.*
 
 /**
@@ -8,7 +7,7 @@ import org.jetbrains.exposed.sql.*
  */
 const val PAGE_LIMIT = 5 //number of products loading in one batch
 
-fun createUser(_name:String, _password:String, _email:String, _trust_score:Int,) {
+fun createUser(_name:String, _password:String, _email:String, _trust_score:Int) {
     User.new {
         name = _name
         email = _email
@@ -96,4 +95,38 @@ fun getCategoryProducts(_id:Int, paging:Int, _orderBy:String?,_orderType:String?
             .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
 
     return Product.wrapRows(products).toList()
+}
+
+fun getProductInfo(_id: Int): Product? {
+    return Product.find { Products.id eq _id }.firstOrNull()
+}
+
+//TODO: produkt znacky, ktora po vymazani v kategorii nebude, tak vymazem spojenie danej znacky s tou kategoriou
+fun deleteProduct(_id: Int): Boolean {
+    val product = Product.find { Products.id eq _id }.firstOrNull() ?: return false
+
+    val reviews: Query = Reviews.select { Reviews.product eq product.id }
+    val reviewsList = Review.wrapRows(reviews).toList()
+
+    for (review in reviewsList) {
+        Photos.deleteWhere { Photos.review eq review.id }
+        ReviewAttributes.deleteWhere { ReviewAttributes.review eq review.id }
+        ReviewVotes.deleteWhere { ReviewVotes.review eq review.id }
+    }
+
+    product.delete()
+    return true
+}
+
+fun addProduct(_name: String, _price: Int, category_ID: Int, brand_ID: Int): Boolean {
+    val category = Category.findById(category_ID) ?: return false
+    val brand =  Brand.findById(brand_ID) ?: return false
+    Product.new {
+        name = _name
+        price = _price
+        score = 0
+        this.category = category
+        this.brand = brand
+    }
+    return true
 }
