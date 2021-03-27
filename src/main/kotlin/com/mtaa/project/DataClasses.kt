@@ -92,9 +92,9 @@ class Product(id:EntityID<Int>) : IntEntity(id) {
 
 object Reviews : IntIdTable() {
     val text: Column<String> = varchar("text", 4095)
-    val product = reference("product_ID", Products)
+    val product = reference("product_id", Products)
     val score: Column<Int> = integer("score")
-    val user = reference("user_ID", Users)
+    val user = reference("user_id", Users)
     val created_at: Column<DateTime> = datetime("created_at")
 }
 
@@ -110,7 +110,7 @@ class Review(id:EntityID<Int>) : IntEntity(id) {
 object ReviewAttributes : IntIdTable() {
     val text: Column<String> = varchar("text", 255)
     val is_positive: Column<Boolean> = bool("is_positive")
-    val review = reference("review_ID", Reviews)
+    val review = reference("review_id", Reviews)
 }
 
 class ReviewAttribute(id:EntityID<Int>) : IntEntity(id) {
@@ -120,9 +120,9 @@ class ReviewAttribute(id:EntityID<Int>) : IntEntity(id) {
 }
 
 object ReviewVotes : IntIdTable() {
-    val user = reference("user_ID", Users)
+    val user = reference("user_id", Users)
     val is_positive: Column<Boolean> = bool("is_positive")
-    val review = reference("review_ID", Reviews)
+    val review = reference("review_id", Reviews)
 }
 
 class ReviewVote(id:EntityID<Int>) : IntEntity(id) {
@@ -133,7 +133,7 @@ class ReviewVote(id:EntityID<Int>) : IntEntity(id) {
 
 object Photos : IntIdTable() {
     val src: Column<ExposedBlob> = blob("source")
-    val review = reference("review_ID", Reviews)
+    val review = reference("review_id", Reviews)
 }
 
 class Photo(id:EntityID<Int>) : IntEntity(id) {
