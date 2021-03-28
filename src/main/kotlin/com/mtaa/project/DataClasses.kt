@@ -38,17 +38,30 @@ data class AddedProduct(val name: String, val price: Int, val category_id: Int, 
 data class ProductsInfo(val products: MutableList<ProductInfo>)
 
 /**
- * Reviews
+ * Reviews GET
  * */
 data class ReviewInfo(val text: String, val attributes: MutableList<ReviewAttributeInfo>,
                       val photos: MutableList<PhotoInfo>, val votes: MutableList<ReviewVoteInfo>,
                       val product_id: Int, val score: Int, val user_id: Int,
                       val created_at: String)
-data class ReviewsInfo(val reviews: MutableList<ReviewsInfo>)
+data class ReviewsInfo(val reviews: MutableList<ReviewInfo>)
 
 data class ReviewAttributeInfo(val text: String, val is_positive: Boolean, val review_id: Int)
 data class ReviewVoteInfo(val user_id: Int, val is_positive: Boolean, val review_id: Int)
 data class PhotoInfo(val source: String, val review_id: Int)
+
+/**
+ * Reviews POST
+ * */
+data class ReviewPostInfo(val text: String, val attributes: MutableList<ReviewAttributePostPutInfo>,
+                          val photos: MutableList<PhotoPostInfo>, val product_id: Int, val score: Int)
+
+data class ReviewAttributePostPutInfo(val text: String, val is_positive: Boolean)
+data class PhotoPostInfo(val source: String)
+/**
+ * Reviews PUT
+ * */
+data class ReviewPutInfo(val text: String, val attributes: MutableList<ReviewAttributePostPutInfo>, val score: Int)
 
 /**
  * SQL data
@@ -124,11 +137,11 @@ object Reviews : IntIdTable() {
 
 class Review(id:EntityID<Int>) : IntEntity(id) {
     companion object: IntEntityClass<Review>(Reviews)
-    val text by Reviews.text
-    val product by Product referencedOn Reviews.product
-    val score by Reviews.score
-    val user by User referencedOn Reviews.user
-    val created_at by Reviews.created_at
+    var text by Reviews.text
+    var product by Product referencedOn Reviews.product
+    var score by Reviews.score
+    var user by User referencedOn Reviews.user
+    var created_at by Reviews.created_at
 }
 
 object ReviewAttributes : IntIdTable() {
@@ -139,9 +152,9 @@ object ReviewAttributes : IntIdTable() {
 
 class ReviewAttribute(id:EntityID<Int>) : IntEntity(id) {
     companion object: IntEntityClass<ReviewAttribute>(ReviewAttributes)
-    val text by ReviewAttributes.text
-    val is_positive by ReviewAttributes.is_positive
-    val review by Review referencedOn ReviewAttributes.review
+    var text by ReviewAttributes.text
+    var is_positive by ReviewAttributes.is_positive
+    var review by Review referencedOn ReviewAttributes.review
 }
 
 object ReviewVotes : IntIdTable() {
@@ -152,9 +165,9 @@ object ReviewVotes : IntIdTable() {
 
 class ReviewVote(id:EntityID<Int>) : IntEntity(id) {
     companion object: IntEntityClass<ReviewVote>(ReviewVotes)
-    val user by User referencedOn ReviewVotes.user
-    val is_positive by ReviewVotes.is_positive
-    val review by Review referencedOn ReviewVotes.review
+    var user by User referencedOn ReviewVotes.user
+    var is_positive by ReviewVotes.is_positive
+    var review by Review referencedOn ReviewVotes.review
 }
 
 object Photos : IntIdTable() {
@@ -164,6 +177,6 @@ object Photos : IntIdTable() {
 
 class Photo(id:EntityID<Int>) : IntEntity(id) {
     companion object: IntEntityClass<Photo>(Photos)
-    val src by Photos.src
-    val review by Review referencedOn Photos.review
+    var src by Photos.src
+    var review by Review referencedOn Photos.review
 }
