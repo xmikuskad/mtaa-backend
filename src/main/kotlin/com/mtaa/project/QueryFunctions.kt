@@ -106,7 +106,10 @@ fun getProductInfo(_id: Int): Product? {
     return Product.find { Products.id eq _id }.firstOrNull()
 }
 
-//TODO: produkt znacky, ktora po vymazani v kategorii nebude, tak vymazem spojenie danej znacky s tou kategoriou
+/*
+TODO: ak vymazem produkt znacky, ktora po vymazani v kategorii nebude,
+ tak vymazem spojenie danej znacky s tou kategoriou
+*/
 fun deleteProduct(_id: Int): Boolean {
     val product = Product.find { Products.id eq _id }.firstOrNull() ?: return false
 
@@ -257,6 +260,12 @@ fun deleteReview(auth: Int, review_id: Int): Status {
     return Status.OK
 }
 
+/*
+TODO: NOT FINISHED
+  vratenie zoznamu recenzii produktu podla jeho id
+  parameter user_id je defaultne null, chcel som ho vyuzit pri vrateni
+  recenzii jedneho usera
+*/
 fun getReviews(product_id: Int, paging: Int, _orderBy: String?, _orderType: String?, user_id: Int? = null) {
     val orderType:SortOrder = when (_orderType) {
         "asc" -> SortOrder.ASC
