@@ -13,18 +13,20 @@ import org.joda.time.DateTime
 /**
  * REST data
  */
-data class RegisterInfo(val name:String, val password: String, val email:String)
-data class LoginInfo(val password: String, val email:String)
-data class UserInfo(val name:String, val trust_score: Int)
-data class AuthInfo(val key:String)
-data class NameInfo(val name:String)
-data class CategoriesInfo(val categories:MutableList<CategoryInfo>)
-data class CategoryInfo(val name:String,val category_ID:Int)
-data class BrandInfo(val name:String,val brand_id:Int)
-data class BrandsInfo(val brands:MutableList<BrandInfo>)
-data class ProductInfo(val name:String,val score:Int,val price:Int,val product_ID:Int)
-data class AddedProduct(val name: String, val price: Int, val category_ID: Int, val brand_ID: Int)
-data class ProductsInfo(val products:MutableList<ProductInfo>)
+data class RegisterInfo(val name: String, val password: String, val email: String)
+data class LoginInfo(val password: String, val email: String)
+data class UserInfo(val name: String, val trust_score: Int)
+data class AuthInfo(val key: String)
+data class NameInfo(val name: String)
+data class CategoriesInfo(val categories: MutableList<CategoryInfo>)
+data class CategoryInfo(val name: String, val category_id: Int)
+data class BrandInfo(val name: String, val brand_id: Int)
+data class BrandsInfo(val brands: MutableList<BrandInfo>)
+data class ProductInfo(val name: String, val score: Int, val price: Int, val product_id: Int)
+data class AddedProduct(val name: String, val price: Int, val category_id: Int, val brand_id: Int)
+data class ProductsInfo(val products: MutableList<ProductInfo>)
+data class ReviewInfo(val text: String, val product_id: Int, val score: Int, val user_id: Int, val created_at: String)
+data class ReviewsInfo(val reviews: MutableList<ReviewsInfo>)
 
 /**
  * SQL data

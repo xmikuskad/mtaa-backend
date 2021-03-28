@@ -135,3 +135,7 @@ fun searchProducts(_name: String): List<Product> {
     val products: Query = Products.select { Products.name like "%$_name%"}
     return Product.wrapRows(products).toList()
 }
+
+fun getReviewInfo(_id: Int): Review? {
+    return Review.find { Reviews.id eq _id }.firstOrNull()
+}
