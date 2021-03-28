@@ -117,6 +117,7 @@ fun deleteProduct(_id: Int): Boolean {
         Photos.deleteWhere { Photos.review eq review.id }
         ReviewAttributes.deleteWhere { ReviewAttributes.review eq review.id }
         ReviewVotes.deleteWhere { ReviewVotes.review eq review.id }
+        review.delete()
     }
 
     product.delete()
