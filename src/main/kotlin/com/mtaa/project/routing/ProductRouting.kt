@@ -6,6 +6,10 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
+import org.jetbrains.exposed.sql.innerJoin
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.NullPointerException
 import java.lang.NumberFormatException
@@ -20,13 +24,19 @@ fun Route.productRouting() {
                 val productList = transaction {
                     searchProducts(data.name)
                 }
-                for(product in productList){
-                    productInfoList.add(ProductInfo(product.name, product.score, product.price, product.id.toString().toInt()))
+                for (product in productList) {
+                    productInfoList.add(
+                        ProductInfo(
+                            product.name,
+                            product.score,
+                            product.price,
+                            product.id.toString().toInt()
+                        )
+                    )
                 }
 
                 call.respond(ProductsInfo(productInfoList))
-            }
-            catch (e: Exception) {
+            } catch (e: Exception) {
                 when (e) {
                     //Got null payload
                     is ContentTransformationException -> call.respond(HttpStatusCode.BadRequest)
@@ -41,7 +51,7 @@ fun Route.productRouting() {
         }
 
         get("{id}") {
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
@@ -100,7 +110,7 @@ fun Route.productRouting() {
                 return@delete
             }
 
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
@@ -113,6 +123,31 @@ fun Route.productRouting() {
                 return@delete
             }
             // Product deleted
+            call.respond(HttpStatusCode.OK)
+        }
+
+        get("{id}/{page}") {
+            val id = parseInt(call, "id")
+            if (id == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+
+            val page = parseInt(call, "page")
+            if (page == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+
+            transaction {
+                getReviews(
+                    id,
+                    page,
+                    call.request.queryParameters["order_by"],
+                    call.request.queryParameters["order_type"]
+                )
+            }
+
             call.respond(HttpStatusCode.OK)
         }
     }
