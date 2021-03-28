@@ -430,14 +430,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/products/2",
+							"raw": "localhost:8080/products/6",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"products",
-								"2"
+								"6"
 							]
 						}
 					},
@@ -456,7 +456,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Test Product 8\",\r\n    \"price\": 400,\r\n    \"brand_ID\": 7,\r\n    \"category_ID\": 6\r\n}",
+							"raw": "{\r\n    \"name\": \"Test Product 8\",\r\n    \"price\": 400,\r\n    \"brand_id\": 7,\r\n    \"category_id\": 6\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -488,14 +488,14 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8080/products/112",
+							"raw": "localhost:8080/products/2",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"products",
-								"112"
+								"2"
 							]
 						}
 					},
@@ -539,7 +539,18 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": "localhost:8080/products/2/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
+								"2",
+								"1"
+							]
+						}
 					},
 					"response": []
 				},
@@ -548,7 +559,17 @@
 					"request": {
 						"method": "GET",
 						"header": [],
-						"url": null
+						"url": {
+							"raw": "localhost:8080/reviews/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"1"
+							]
+						}
 					},
 					"response": []
 				},
@@ -556,7 +577,22 @@
 					"name": "Create review",
 					"request": {
 						"method": "POST",
-						"header": [],
+						"header": [
+							{
+								"key": "auth",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"text\",\r\n    \"attributes\": [\r\n        {\r\n            \"text\": \"super\",\r\n            \"is_positive\": true\r\n        },\r\n        {\r\n            \"text\": \"nieco zle\",\r\n            \"is_positive\": false\r\n        }\r\n    ],\r\n    \"photos\": [\r\n        {\r\n            \"source\": \"path2\"\r\n        },\r\n        {\r\n            \"source\": \"path1\"\r\n        }\r\n    ],\r\n\r\n    \"product_id\": 2,\r\n    \"score\": 6\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
 							"raw": "localhost:8080/reviews",
 							"host": [
@@ -574,16 +610,31 @@
 					"name": "Update review",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "auth",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"text\": \"vyborne zariadenie\",\r\n    \"attributes\": [\r\n        {\r\n            \"text\": \"velmi dobry zvuk\",\r\n            \"is_positive\": true\r\n        },\r\n        {\r\n            \"text\": \"horsia bateria\",\r\n            \"is_positive\": false\r\n        },\r\n        {\r\n            \"text\": \"lacne\",\r\n            \"is_positive\": true\r\n        }\r\n    ],\r\n    \"score\": 9\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
 						"url": {
-							"raw": "localhost:8080/reviews/2",
+							"raw": "localhost:8080/reviews/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"2"
+								"1"
 							]
 						}
 					},
@@ -593,16 +644,22 @@
 					"name": "Like review",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "auth",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "localhost:8080/reviews/1/like",
+							"raw": "localhost:8080/reviews/2/like",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"1",
+								"2",
 								"like"
 							]
 						}
@@ -613,7 +670,13 @@
 					"name": "Dislike review",
 					"request": {
 						"method": "PUT",
-						"header": [],
+						"header": [
+							{
+								"key": "auth",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"type": "text"
+							}
+						],
 						"url": {
 							"raw": "localhost:8080/reviews/1/dislike",
 							"host": [
@@ -633,8 +696,24 @@
 					"name": "Delete review",
 					"request": {
 						"method": "DELETE",
-						"header": [],
-						"url": null
+						"header": [
+							{
+								"key": "auth",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/reviews/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"2"
+							]
+						}
 					},
 					"response": []
 				}
