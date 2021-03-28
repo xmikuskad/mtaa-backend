@@ -4,29 +4,51 @@ import org.jetbrains.exposed.dao.IntEntity
 import org.jetbrains.exposed.dao.IntEntityClass
 import org.jetbrains.exposed.dao.id.EntityID
 import org.jetbrains.exposed.dao.id.IntIdTable
-import org.jetbrains.exposed.sql.BlobColumnType
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.jodatime.datetime
-import org.jetbrains.exposed.sql.statements.api.ExposedBlob
 import org.joda.time.DateTime
 
 /**
  * REST data
  */
+
 data class RegisterInfo(val name: String, val password: String, val email: String)
 data class LoginInfo(val password: String, val email: String)
 data class UserInfo(val name: String, val trust_score: Int)
 data class AuthInfo(val key: String)
 data class NameInfo(val name: String)
+
+/**
+ * Categories
+ * */
 data class CategoriesInfo(val categories: MutableList<CategoryInfo>)
 data class CategoryInfo(val name: String, val category_id: Int)
+
+/**
+ * Brands
+ * */
 data class BrandInfo(val name: String, val brand_id: Int)
 data class BrandsInfo(val brands: MutableList<BrandInfo>)
+
+/**
+ * Products
+ * */
 data class ProductInfo(val name: String, val score: Int, val price: Int, val product_id: Int)
 data class AddedProduct(val name: String, val price: Int, val category_id: Int, val brand_id: Int)
 data class ProductsInfo(val products: MutableList<ProductInfo>)
-data class ReviewInfo(val text: String, val product_id: Int, val score: Int, val user_id: Int, val created_at: String)
+
+/**
+ * Reviews
+ * */
+data class ReviewInfo(val text: String, val attributes: MutableList<ReviewAttributeInfo>,
+                      val photos: MutableList<PhotoInfo>, val votes: MutableList<ReviewVoteInfo>,
+                      val product_id: Int, val score: Int, val user_id: Int,
+                      val created_at: String)
 data class ReviewsInfo(val reviews: MutableList<ReviewsInfo>)
+
+data class ReviewAttributeInfo(val text: String, val is_positive: Boolean, val review_id: Int)
+data class ReviewVoteInfo(val user_id: Int, val is_positive: Boolean, val review_id: Int)
+data class PhotoInfo(val source: String, val review_id: Int)
 
 /**
  * SQL data
@@ -116,6 +138,7 @@ object ReviewAttributes : IntIdTable() {
 }
 
 class ReviewAttribute(id:EntityID<Int>) : IntEntity(id) {
+    companion object: IntEntityClass<ReviewAttribute>(ReviewAttributes)
     val text by ReviewAttributes.text
     val is_positive by ReviewAttributes.is_positive
     val review by Review referencedOn ReviewAttributes.review
@@ -128,17 +151,19 @@ object ReviewVotes : IntIdTable() {
 }
 
 class ReviewVote(id:EntityID<Int>) : IntEntity(id) {
+    companion object: IntEntityClass<ReviewVote>(ReviewVotes)
     val user by User referencedOn ReviewVotes.user
     val is_positive by ReviewVotes.is_positive
     val review by Review referencedOn ReviewVotes.review
 }
 
 object Photos : IntIdTable() {
-    val src: Column<ExposedBlob> = blob("source")
+    val src: Column<String> = varchar("source", 255)
     val review = reference("review_id", Reviews)
 }
 
 class Photo(id:EntityID<Int>) : IntEntity(id) {
+    companion object: IntEntityClass<Photo>(Photos)
     val src by Photos.src
     val review by Review referencedOn Photos.review
 }

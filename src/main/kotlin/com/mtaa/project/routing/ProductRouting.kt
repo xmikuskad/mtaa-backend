@@ -8,34 +8,33 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.NullPointerException
+import java.lang.NumberFormatException
 
 fun Route.productRouting() {
     route("/products") {
-        route("/search") {
-            post {
-                try {
-                    val productInfoList: MutableList<ProductInfo> = mutableListOf()
-                    val data = call.receive<NameInfo>()
+        post("/search") {
+            try {
+                val productInfoList: MutableList<ProductInfo> = mutableListOf()
+                val data = call.receive<NameInfo>()
 
-                    val productList = transaction {
-                        searchProducts(data.name)
-                    }
-                    for(product in productList){
-                        productInfoList.add(ProductInfo(product.name, product.score, product.price, product.id.toString().toInt()))
-                    }
-
-                    call.respond(ProductsInfo(productInfoList))
+                val productList = transaction {
+                    searchProducts(data.name)
                 }
-                catch (e: Exception) {
-                    when (e) {
-                        //Got null payload
-                        is ContentTransformationException -> call.respond(HttpStatusCode.BadRequest)
-                        //Some values missing in payload
-                        is NullPointerException -> call.respond(HttpStatusCode.BadRequest)
-                        else -> {
-                            println(e.stackTraceToString())
-                            call.respond(HttpStatusCode.InternalServerError)
-                        }
+                for(product in productList){
+                    productInfoList.add(ProductInfo(product.name, product.score, product.price, product.id.toString().toInt()))
+                }
+
+                call.respond(ProductsInfo(productInfoList))
+            }
+            catch (e: Exception) {
+                when (e) {
+                    //Got null payload
+                    is ContentTransformationException -> call.respond(HttpStatusCode.BadRequest)
+                    //Some values missing in payload
+                    is NullPointerException -> call.respond(HttpStatusCode.BadRequest)
+                    else -> {
+                        println(e.stackTraceToString())
+                        call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
             }
@@ -85,13 +84,14 @@ fun Route.productRouting() {
                     is ContentTransformationException -> call.respond(HttpStatusCode.BadRequest)
                     //Some values missing in payload
                     is NullPointerException -> call.respond(HttpStatusCode.BadRequest)
+                    //Fail to parse id
+                    is NumberFormatException -> call.respond(HttpStatusCode.BadRequest)
                     else -> {
                         println(e.stackTraceToString())
                         call.respond(HttpStatusCode.InternalServerError)
                     }
                 }
             }
-
         }
 
         delete("{id}") {

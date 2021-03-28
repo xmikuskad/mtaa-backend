@@ -139,3 +139,22 @@ fun searchProducts(_name: String): List<Product> {
 fun getReviewInfo(_id: Int): Review? {
     return Review.find { Reviews.id eq _id }.firstOrNull()
 }
+
+fun getReviewAttributes(review_id: Int): List<ReviewAttribute> {
+    val attributes: Query = ReviewAttributes.select { ReviewAttributes.review eq review_id }
+    return ReviewAttribute.wrapRows(attributes).toList()
+}
+
+fun getReviewVotes(review_id: Int): List<ReviewVote> {
+    val votes: Query = ReviewVotes.select { ReviewVotes.review eq review_id }
+    return ReviewVote.wrapRows(votes).toList()
+}
+
+fun getPhotos(review_id: Int): List<Photo> {
+    val photos: Query = Photos.select { Photos.review eq review_id }
+    return Photo.wrapRows(photos).toList()
+}
+
+fun createReview() {
+
+}
