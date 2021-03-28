@@ -8,7 +8,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.NullPointerException
-import java.lang.NumberFormatException
 
 fun Route.reviewRouting() {
     route("/reviews") {
@@ -59,25 +58,23 @@ fun Route.reviewRouting() {
                 votesInfo.add(ReviewVoteInfo(user.id.toString().toInt(), vote.is_positive, id))
             }
 
-            // TODO Neda sa spravit review.product.id.toString().toInt(). Pada to. WHY??
-            val product = transaction {
-                Product.findById(review.product.id)
+            var product_id = 0
+            var user_id = 0
+            transaction {
+                product_id = review.product.id.toString().toInt()
+                user_id = review.user.id.toString().toInt()
             }
-            val user = transaction {
-                User.findById(review.user.id)
-            }
-            if (product == null || user == null) {
-                call.respond(HttpStatusCode.NotFound)
-                return@get
-            }
+
             // Review found
             call.respond(ReviewInfo(review.text, attributesInfo, photosInfo,
-                votesInfo, product.id.toString().toInt(), review.score,
-                user.id.toString().toInt(), review.created_at.toString()))
+                votesInfo, product_id, review.score,
+                user_id, review.created_at.toString()))
         }
         post {
             try {
                 val data = call.receive<ReviewInfo>()
+                println(data) // debug
+                println(data.photos) // debug
                 call.respond(HttpStatusCode.OK)
             } catch (e: Exception) {
                 when (e) {
@@ -85,8 +82,6 @@ fun Route.reviewRouting() {
                     is ContentTransformationException -> call.respond(HttpStatusCode.BadRequest)
                     //Some values missing in payload
                     is NullPointerException -> call.respond(HttpStatusCode.BadRequest)
-                    //Fail to parse id
-                    is NumberFormatException -> call.respond(HttpStatusCode.BadRequest)
                     else -> {
                         println(e.stackTraceToString())
                         call.respond(HttpStatusCode.InternalServerError)
@@ -94,7 +89,7 @@ fun Route.reviewRouting() {
                 }
             }
         }
-        put {
+        put("{id}") {
 
         }
         put("{id}/like") {
