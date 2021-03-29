@@ -25,7 +25,7 @@ fun Route.productRouting() {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
-                if (page!! <= 0) {
+                if (page <= 0) {
                     page = 1
                 }
                 val productList = transaction {
@@ -150,33 +150,7 @@ fun Route.productRouting() {
             if (page!! <= 0) {
                 page = 1
             }
-            val reviewsInfo = mutableListOf<ReviewInfoItem>()
-
-            transaction {
-                val reviews = getReviews(
-                    id,
-                    page!!,
-                    call.request.queryParameters["order_by"],
-                    call.request.queryParameters["order_type"]
-                )
-                for (review in reviews) {
-                    val data = getReviewInfoData(review.id.toString().toInt())
-                    if (data != null) {
-                        reviewsInfo += ReviewInfoItem(
-                            data.text,
-                            data.attributes,
-                            data.photos,
-                            data.likes,
-                            data.dislikes,
-                            data.product_id,
-                            data.score,
-                            data.user_id,
-                            review.id.toString().toInt(),
-                            data.created_at
-                        )
-                    }
-                }
-            }
+            val reviewsInfo = getReviewsInfoItems(call, id, page!!, ReviewListType.PRODUCT_REVIEWS)
 
             call.respond(ReviewsInfo(reviewsInfo))
         }

@@ -31,7 +31,7 @@ const val MAX_SCORE = 100 //Maximum score value
 
 data class RegisterInfo(val name: String, val password: String, val email: String)
 data class LoginInfo(val password: String, val email: String)
-data class UserInfo(val name: String, val trust_score: Int)
+data class UserInfo(val name: String, val trust_score: Int, val reviews: MutableList<ReviewInfoItem>)
 data class AuthInfo(val key: String)
 data class NameInfo(val name: String)
 

@@ -42,6 +42,29 @@ fun Route.userRouting() {
     }
 
     route("/users") {
+        get("{page}") {
+            val auth = getIdFromAuth(call)
+            if (auth == -1) {
+                call.respond(HttpStatusCode.Unauthorized)
+                return@get
+            }
+            var page = parseInt(call, "page")
+            if (page == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            if (page <= 0) {
+                page = 1
+            }
+            val user = transaction { getUserById(auth) }
+            if (user == null) { //User not found
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+            val reviewsInfo = getReviewsInfoItems(call, auth, page, ReviewListType.USER_REVIEWS)
+
+            call.respond(UserInfo(user.name, user.trust_score, reviewsInfo))
+        }
         put {
             try {
                 val id = getIdFromAuth(call)
@@ -83,19 +106,29 @@ fun Route.userRouting() {
 
         }
 
-        get("{id}") {
+        get("{id}/{page}") {
             val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
+            var page = parseInt(call, "page")
+            if (page == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@get
+            }
+            if (page!! <= 0) {
+                page = 1
+            }
 
             val user = transaction { getUserById(id) }
-            if (user != null) { //User found
-                call.respond(UserInfo(user.name, user.trust_score))
-            } else { //User not found
+            if (user == null) { //User not found
                 call.respond(HttpStatusCode.NotFound)
+                return@get
             }
+            val reviewsInfo = getReviewsInfoItems(call, id, page!!, ReviewListType.USER_REVIEWS)
+
+            call.respond(UserInfo(user.name, user.trust_score, reviewsInfo))
         }
 
         post {

@@ -51,19 +51,25 @@
 					"response": []
 				},
 				{
-					"name": "Get user info",
+					"name": "Get logged-in user info",
 					"request": {
 						"method": "GET",
-						"header": [],
+						"header": [
+							{
+								"key": "auth",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "localhost:8080/users/3",
+							"raw": "localhost:8080/users/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"users",
-								"3"
+								"1"
 							]
 						}
 					},
@@ -162,6 +168,26 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Get user info by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/users/3/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"3",
+								"1"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -181,7 +207,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"name\":\"brandX\"}",
+							"raw": "{\"name\":\"LG\"}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -456,7 +482,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"name\": \"Test Product 8\",\r\n    \"price\": 400,\r\n    \"brand_id\": 7,\r\n    \"category_id\": 6\r\n}",
+							"raw": "{\r\n    \"name\": \"LG V30\",\r\n    \"price\": 329,\r\n    \"brand_id\": 8,\r\n    \"category_id\": 1\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -516,14 +542,15 @@
 							}
 						},
 						"url": {
-							"raw": "localhost:8080/products/search",
+							"raw": "localhost:8080/products/search/2",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"products",
-								"search"
+								"search",
+								"2"
 							]
 						}
 					},
@@ -540,14 +567,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/products/2/1",
+							"raw": "localhost:8080/products/16/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"products",
-								"2",
+								"16",
 								"1"
 							]
 						}
@@ -586,7 +613,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\r\n    \"text\": \"text\",\r\n    \"attributes\": [\r\n        {\r\n            \"text\": \"super\",\r\n            \"is_positive\": true\r\n        },\r\n        {\r\n            \"text\": \"nieco zle\",\r\n            \"is_positive\": false\r\n        }\r\n    ],\r\n    \"photos\": [\r\n        {\r\n            \"source\": \"path2\"\r\n        },\r\n        {\r\n            \"source\": \"path1\"\r\n        }\r\n    ],\r\n\r\n    \"product_id\": 2,\r\n    \"score\": 6\r\n}",
+							"raw": "{\r\n    \"text\": \"dobrý telefón\",\r\n    \"attributes\": [\r\n        {\r\n            \"text\": \"lahky\",\r\n            \"is_positive\": true\r\n        },\r\n        {\r\n            \"text\": \"slabe repraky\",\r\n            \"is_positive\": false\r\n        },\r\n        {\r\n            \"text\": \"bateria slaba\",\r\n            \"is_positive\": false\r\n        }\r\n    ],\r\n    \"photos\": [\r\n        {\r\n            \"source\": \"cesta2\"\r\n        },\r\n        {\r\n            \"source\": \"cesta1\"\r\n        }\r\n    ],\r\n\r\n    \"product_id\": 16,\r\n    \"score\": 8\r\n}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -652,14 +679,14 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8080/reviews/2/like",
+							"raw": "localhost:8080/reviews/5/like",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"2",
+								"5",
 								"like"
 							]
 						}
@@ -678,14 +705,14 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8080/reviews/1/dislike",
+							"raw": "localhost:8080/reviews/5/dislike",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"1",
+								"5",
 								"dislike"
 							]
 						}
@@ -704,14 +731,14 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8080/reviews/2",
+							"raw": "localhost:8080/reviews/4",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"2"
+								"4"
 							]
 						}
 					},

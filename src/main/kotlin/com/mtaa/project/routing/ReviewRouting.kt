@@ -9,6 +9,10 @@ import io.ktor.routing.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.NullPointerException
 
+enum class ReviewListType {
+    USER_REVIEWS, PRODUCT_REVIEWS
+}
+
 fun Route.reviewRouting() {
     route("/reviews") {
         get("{id}") {
@@ -296,4 +300,37 @@ fun validateReview(text:String,score:Int,attributes: MutableList<ReviewAttribute
         }
     }
     return true
+}
+
+fun getReviewsInfoItems(call: ApplicationCall, id: Int, page: Int, listType: ReviewListType): MutableList<ReviewInfoItem> {
+    val reviewsInfo = mutableListOf<ReviewInfoItem>()
+
+    transaction {
+        val reviews = getReviews(
+            id,
+            page,
+            call.request.queryParameters["order_by"],
+            call.request.queryParameters["order_type"],
+            listType
+        )
+        for (review in reviews) {
+            val data = getReviewInfoData(review.id.toString().toInt())
+            if (data != null) {
+                reviewsInfo += ReviewInfoItem(
+                    data.text,
+                    data.attributes,
+                    data.photos,
+                    data.likes,
+                    data.dislikes,
+                    data.product_id,
+                    data.score,
+                    data.user_id,
+                    review.id.toString().toInt(),
+                    data.created_at
+                )
+            }
+        }
+    }
+
+    return reviewsInfo
 }

@@ -1,5 +1,6 @@
 package com.mtaa.project
 
+import com.mtaa.project.routing.ReviewListType
 import org.jetbrains.exposed.sql.*
 import org.joda.time.DateTime
 
@@ -299,7 +300,7 @@ fun deleteReview(auth: Int, review_id: Int): Status {
     return Status.OK
 }
 
-fun getReviews(product_id: Int, paging: Int, _orderBy: String?, _orderType: String?, user_id: Int? = null): List<Review> {
+fun getReviews(id: Int, paging: Int, _orderBy: String?, _orderType: String?, listType: ReviewListType): List<Review> {
     val orderType:SortOrder = when (_orderType) {
         "asc" -> SortOrder.ASC
         "desc" -> SortOrder.DESC
@@ -309,19 +310,34 @@ fun getReviews(product_id: Int, paging: Int, _orderBy: String?, _orderType: Stri
     when (_orderBy) {
         "created_at" -> {
             // Query pre typ Column<DateTime>
-            val query = Reviews.select { Reviews.product eq product_id }.orderBy(Reviews.created_at, orderType)
+            if (listType == ReviewListType.PRODUCT_REVIEWS) {
+                val query = Reviews.select { Reviews.product eq id }.orderBy(Reviews.created_at, orderType)
+                    .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+                return Review.wrapRows(query).toList()
+            }
+            val query = Reviews.select { Reviews.user eq id }.orderBy(Reviews.created_at, orderType)
                 .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
             return Review.wrapRows(query).toList()
         }
         "score" -> {
             // Query pre typ Column<Int>
-            val query = Reviews.select { Reviews.product eq product_id }.orderBy(Reviews.score, orderType)
+            if (listType == ReviewListType.PRODUCT_REVIEWS) {
+                val query = Reviews.select { Reviews.product eq id }.orderBy(Reviews.score, orderType)
+                   .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+                return Review.wrapRows(query).toList()
+            }
+            val query = Reviews.select { Reviews.user eq id }.orderBy(Reviews.score, orderType)
                 .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
             return Review.wrapRows(query).toList()
         }
         else -> {
             // Query pre default order_by
-            val query = Reviews.select { Reviews.product eq product_id }.orderBy(Reviews.id, orderType)
+            if (listType == ReviewListType.PRODUCT_REVIEWS) {
+                val query = Reviews.select { Reviews.product eq id }.orderBy(Reviews.id, orderType)
+                    .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+                return Review.wrapRows(query).toList()
+            }
+            val query = Reviews.select { Reviews.user eq id }.orderBy(Reviews.score, orderType)
                 .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
             return Review.wrapRows(query).toList()
         }
