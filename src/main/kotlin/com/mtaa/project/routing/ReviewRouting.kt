@@ -126,7 +126,7 @@ fun Route.reviewRouting() {
             }
         }
         put("{id}/like") {
-            val result = addVoteToReview(call,true)
+            val result = addVoteToReview(call, true)
             when (result) {
                 Status.UNAUTHORIZED -> {
                     call.respond(HttpStatusCode.Unauthorized)
@@ -137,7 +137,10 @@ fun Route.reviewRouting() {
                     return@put
                 }
                 Status.OK -> {
-                    call.respond(HttpStatusCode.OK)
+                    parseInt(call, "id")?.let { it1 -> getVotes(it1) }?.let { it2 -> call.respond(it2) }
+                        ?: call.respond(
+                            HttpStatusCode.InternalServerError
+                        )
                     return@put
                 }
                 Status.BAD_REQUEST -> {
@@ -147,7 +150,7 @@ fun Route.reviewRouting() {
             }
         }
         put("{id}/dislike") {
-            val result = addVoteToReview(call,false)
+            val result = addVoteToReview(call, false)
             when (result) {
                 Status.UNAUTHORIZED -> {
                     call.respond(HttpStatusCode.Unauthorized)
@@ -158,7 +161,10 @@ fun Route.reviewRouting() {
                     return@put
                 }
                 Status.OK -> {
-                    call.respond(HttpStatusCode.OK)
+                    parseInt(call, "id")?.let { it1 -> getVotes(it1) }?.let { it2 -> call.respond(it2) }
+                        ?: call.respond(
+                            HttpStatusCode.InternalServerError
+                        )
                     return@put
                 }
                 Status.BAD_REQUEST -> {
@@ -247,6 +253,24 @@ fun getReviewInfoData(id:Int): ReviewInfo? {
         likes, dislikes, product_id, review.score,
         user_id, review.created_at.toString()
     )
+}
+
+fun getVotes(id:Int) :ReviewVotesInfo {
+    val votes = transaction {
+        getReviewVotes(id)
+    }
+
+    var likes = 0
+    var dislikes = 0
+    for (vote in votes) {
+        if (vote.is_positive) {
+            likes++
+        } else {
+            dislikes++
+        }
+    }
+
+    return ReviewVotesInfo(likes,dislikes)
 }
 
 fun addVoteToReview(call: ApplicationCall, is_positive: Boolean): Status {
