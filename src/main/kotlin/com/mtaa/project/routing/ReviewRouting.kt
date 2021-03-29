@@ -17,56 +17,16 @@ fun Route.reviewRouting() {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-            val review = transaction {
-                getReviewInfo(id)
-            }
-            if (review == null) { //Product not found
+
+            val reviewInfo = getReviewInfoData(id)
+            if(reviewInfo == null){
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
-            val photos = transaction {
-                getPhotos(id)
-            }
-            val attributes = transaction {
-                getReviewAttributes(id)
-            }
-            val votes = transaction {
-                getReviewVotes(id)
-            }
-            val photosInfo: MutableList<PhotoInfo> = mutableListOf()
-            for (photo in photos) {
-                photosInfo.add(PhotoInfo(photo.src, id))
-            }
-
-            val attributesInfo: MutableList<ReviewAttributeInfo> = mutableListOf()
-            for (attribute in attributes) {
-                attributesInfo.add(ReviewAttributeInfo(attribute.text, attribute.is_positive, id))
-            }
-
-            val votesInfo: MutableList<ReviewVoteInfo> = mutableListOf()
-            for (vote in votes) {
-                val user = transaction {
-                    User.findById(vote.user.id)
-                }
-                if (user == null) {
-                    call.respond(HttpStatusCode.NotFound)
-                    return@get
-                }
-                votesInfo.add(ReviewVoteInfo(user.id.toString().toInt(), vote.is_positive, id))
-            }
-
-            var product_id = 0
-            var user_id = 0
-            transaction {
-                product_id = review.product.id.toString().toInt()
-                user_id = review.user.id.toString().toInt()
-            }
-
             // Review found
-            call.respond(ReviewInfo(review.text, attributesInfo, photosInfo,
-                votesInfo, product_id, review.score,
-                user_id, review.created_at.toString()))
+            call.respond(reviewInfo)
         }
+
         post {
             val auth = getID(call)
             if (auth == -1) {
@@ -77,7 +37,7 @@ fun Route.reviewRouting() {
             try {
                 val data = call.receive<ReviewPostInfo>()
 
-                if (data.photos.equals(null) || data.attributes.equals(null)) {
+                if (data.attributes.equals(null)) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
@@ -257,4 +217,52 @@ fun Route.reviewRouting() {
             }
         }
     }
+}
+
+fun getReviewInfoData(id:Int): ReviewInfo? {
+    val review = transaction {
+        getReviewInfo(id)
+    } ?: return null
+    val photos = transaction {
+        getPhotos(id)
+    }
+    val attributes = transaction {
+        getReviewAttributes(id)
+    }
+    val votes = transaction {
+        getReviewVotes(id)
+    }
+    val photosInfo: MutableList<PhotoInfo> = mutableListOf()
+    for (photo in photos) {
+        photosInfo.add(PhotoInfo(photo.id.toString().toInt()))
+    }
+
+    val attributesInfo: MutableList<ReviewAttributeInfo> = mutableListOf()
+    for (attribute in attributes) {
+        attributesInfo.add(ReviewAttributeInfo(attribute.text, attribute.is_positive, id))
+    }
+
+    var likes = 0
+    var dislikes = 0
+    for (vote in votes) {
+        if (vote.is_positive) {
+            likes++
+        } else {
+            dislikes++
+        }
+    }
+
+    var product_id = 0
+    var user_id = 0
+    transaction {
+        product_id = review.product.id.toString().toInt()
+        user_id = review.user.id.toString().toInt()
+    }
+
+    // Review found
+    return ReviewInfo(
+        review.text, attributesInfo, photosInfo,
+        likes, dislikes, product_id, review.score,
+        user_id, review.created_at.toString()
+    )
 }

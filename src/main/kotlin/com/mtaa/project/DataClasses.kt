@@ -40,24 +40,28 @@ data class ProductsInfo(val products: MutableList<ProductInfo>)
 /**
  * Reviews GET
  * */
+//Single review
 data class ReviewInfo(val text: String, val attributes: MutableList<ReviewAttributeInfo>,
-                      val photos: MutableList<PhotoInfo>, val votes: MutableList<ReviewVoteInfo>,
+                      val photos: MutableList<PhotoInfo>, val likes:Int, val dislikes:Int,
                       val product_id: Int, val score: Int, val user_id: Int,
                       val created_at: String)
-data class ReviewsInfo(val reviews: MutableList<ReviewInfo>)
+//When returning array of reviews
+data class ReviewInfoItem(val text: String, val attributes: MutableList<ReviewAttributeInfo>,
+                      val photos: MutableList<PhotoInfo>, val likes:Int, val dislikes:Int,
+                      val product_id: Int, val score: Int, val user_id: Int,
+                      val review_id: Int,val created_at: String)
+data class ReviewsInfo(val reviews: MutableList<ReviewInfoItem>)
 
 data class ReviewAttributeInfo(val text: String, val is_positive: Boolean, val review_id: Int)
-data class ReviewVoteInfo(val user_id: Int, val is_positive: Boolean, val review_id: Int)
-data class PhotoInfo(val source: String, val review_id: Int)
+data class PhotoInfo(val photo_id: Int)
 
 /**
  * Reviews POST
  * */
 data class ReviewPostInfo(val text: String, val attributes: MutableList<ReviewAttributePostPutInfo>,
-                          val photos: MutableList<PhotoPostInfo>, val product_id: Int, val score: Int)
+                          val product_id: Int, val score: Int)
 
 data class ReviewAttributePostPutInfo(val text: String, val is_positive: Boolean)
-data class PhotoPostInfo(val source: String)
 /**
  * Reviews PUT
  * */

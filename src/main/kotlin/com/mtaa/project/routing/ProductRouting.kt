@@ -83,7 +83,9 @@ fun Route.productRouting() {
                     call.respond(HttpStatusCode.NotFound)
                     return@post
                 }
+
                 call.respond(HttpStatusCode.OK)
+
             } catch (e: Exception) { //If body doesnt contain all variables
                 when (e) {
                     //Got null payload
@@ -134,18 +136,35 @@ fun Route.productRouting() {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
+            val reviewsInfo = mutableListOf<ReviewInfoItem>()
 
-            // TODO: NOT FINISHED
             transaction {
-                getReviews(
+                val reviews = getReviews(
                     id,
                     page,
                     call.request.queryParameters["order_by"],
                     call.request.queryParameters["order_type"]
                 )
+                for (review in reviews) {
+                    val data = getReviewInfoData(review.id.toString().toInt())
+                    if (data != null) {
+                        reviewsInfo += ReviewInfoItem(
+                            data.text,
+                            data.attributes,
+                            data.photos,
+                            data.likes,
+                            data.dislikes,
+                            data.product_id,
+                            data.score,
+                            data.user_id,
+                            review.id.toString().toInt(),
+                            data.created_at
+                        )
+                    }
+                }
             }
 
-            call.respond(HttpStatusCode.OK)
+            call.respond(reviewsInfo)
         }
     }
 }

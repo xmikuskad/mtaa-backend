@@ -106,10 +106,6 @@ fun getProductInfo(_id: Int): Product? {
     return Product.find { Products.id eq _id }.firstOrNull()
 }
 
-/*
-TODO: ak vymazem produkt znacky, ktora po vymazani v kategorii nebude,
- tak vymazem spojenie danej znacky s tou kategoriou
-*/
 fun deleteProduct(_id: Int): Boolean {
     val product = Product.find { Products.id eq _id }.firstOrNull() ?: return false
 
@@ -123,6 +119,16 @@ fun deleteProduct(_id: Int): Boolean {
         review.delete()
     }
 
+    //Check if there are any products with this brand and category
+    val test =
+        Product.find { Products.brand eq product.brand.id and (Products.category eq product.category.id) and (Products.id neq product.id) }
+            .firstOrNull()
+    //If not then delete connection
+    if (test == null) {
+        CategoryBrand.find { CategoriesBrands.brand eq product.brand.id and (CategoriesBrands.category eq product.category.id) }
+            .first().delete()
+    }
+
     product.delete()
     return true
 }
@@ -130,6 +136,16 @@ fun deleteProduct(_id: Int): Boolean {
 fun addProduct(_name: String, _price: Int, category_ID: Int, brand_ID: Int): Boolean {
     val category = Category.findById(category_ID) ?: return false
     val brand =  Brand.findById(brand_ID) ?: return false
+
+    //If this is the first time adding a brand for a category then create connection
+    val catBrand =  CategoryBrand.find {CategoriesBrands.brand eq brand.id and (CategoriesBrands.category eq category.id)}.firstOrNull()
+    if(catBrand == null) {
+        CategoryBrand.new {
+            this.brand = brand
+            this.category =  category
+        }
+    }
+
     Product.new {
         name = _name
         price = _price
@@ -180,13 +196,6 @@ fun createReview(reviewPostInfo: ReviewPostInfo, auth: Int): Status {
         ReviewAttribute.new {
             text = attribute.text
             is_positive = attribute.is_positive
-            review = newReview
-        }
-    }
-
-    for (photo in reviewPostInfo.photos) {
-        Photo.new {
-            src = photo.source
             review = newReview
         }
     }
@@ -260,13 +269,7 @@ fun deleteReview(auth: Int, review_id: Int): Status {
     return Status.OK
 }
 
-/*
-TODO: NOT FINISHED
-  vratenie zoznamu recenzii produktu podla jeho id
-  parameter user_id je defaultne null, chcel som ho vyuzit pri vrateni
-  recenzii jedneho usera
-*/
-fun getReviews(product_id: Int, paging: Int, _orderBy: String?, _orderType: String?, user_id: Int? = null) {
+fun getReviews(product_id: Int, paging: Int, _orderBy: String?, _orderType: String?, user_id: Int? = null): List<Review> {
     val orderType:SortOrder = when (_orderType) {
         "asc" -> SortOrder.ASC
         "desc" -> SortOrder.DESC
@@ -276,14 +279,21 @@ fun getReviews(product_id: Int, paging: Int, _orderBy: String?, _orderType: Stri
     when (_orderBy) {
         "created_at" -> {
             // Tu budu query pre typ Column<DateTime>
-            var orderBy = Reviews.created_at
+            val query = Reviews.select { Reviews.product eq product_id }.orderBy(Reviews.created_at, orderType)
+                .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+            return Review.wrapRows(query).toList()
         }
         "score" -> {
             // Tu budu query pre typ Column<Int>
-            var orderBy = Reviews.score
+            val query = Reviews.select { Reviews.product eq product_id }.orderBy(Reviews.score, orderType)
+                .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+            return Review.wrapRows(query).toList()
         }
         else -> {
             // Tu budu query pre default order_by
+            val query = Reviews.select { Reviews.product eq product_id }.orderBy(Reviews.id, orderType)
+                .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+            return Review.wrapRows(query).toList()
         }
     }
 }
@@ -294,7 +304,7 @@ fun getPhotoPath(review_id: Int, _id:Int): Photo? {
 }
 
 fun createPhoto(_src:String, review_id: Int):Boolean {
-    val _review = Review.find{Reviews.id eq review_id}.firstOrNull() ?: return false;
+    val _review = Review.find{Reviews.id eq review_id}.firstOrNull() ?: return false
     Photo.new {
         src=_src
         review=_review
