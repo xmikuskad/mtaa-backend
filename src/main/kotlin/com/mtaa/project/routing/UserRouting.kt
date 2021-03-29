@@ -170,19 +170,15 @@ fun Route.userRouting() {
                 return@delete
             }
 
-            var found = false
-            transaction {
-                getUserById(id)?.let {
-                    it.delete()
-                    found = true
-                }
+            val result = transaction {
+                deleteUser(id)
             }
 
-            if (found) { //Record succesfully deleted
-                call.respond(HttpStatusCode.OK)
-            } else { //If we didnt find any record to delete
+            if (!result) { // User not found
                 call.respond(HttpStatusCode.NotFound)
+                return@delete
             }
+            call.respond(HttpStatusCode.OK)
         }
     }
 }

@@ -34,6 +34,23 @@ fun getUserById(_id:Int): User? {
     return User.find {Users.id eq _id}.firstOrNull()
 }
 
+fun deleteUser(user_id: Int): Boolean {
+    val user = User.findById(user_id) ?: return false
+
+    val reviews: Query = Reviews.select { Reviews.user eq user.id }
+    val reviewsList = Review.wrapRows(reviews).toList()
+
+    for (review in reviewsList) {
+        Photos.deleteWhere { Photos.review eq review.id }
+        ReviewAttributes.deleteWhere { ReviewAttributes.review eq review.id }
+        ReviewVotes.deleteWhere { ReviewVotes.review eq review.id }
+        review.delete()
+    }
+
+    user.delete()
+    return true
+}
+
 fun createBrand(_name:String) {
     Brand.new {
         name = _name
@@ -262,6 +279,8 @@ fun voteOnReview(auth: Int, review_id: Int, is_positive: Boolean): Status {
     val review = Review.findById(review_id) ?: return Status.NOT_FOUND
     val user = User.findById(auth) ?: return Status.UNAUTHORIZED
 
+    val reviewOwner = review.user
+
     val sameVote = ReviewVote.find {
                 (ReviewVotes.user eq user.id) and
                 (ReviewVotes.review eq review.id) and
@@ -270,6 +289,11 @@ fun voteOnReview(auth: Int, review_id: Int, is_positive: Boolean): Status {
 
     if (sameVote != null) {
         sameVote.delete()
+        if (is_positive) {
+            reviewOwner.trust_score--
+        } else {
+            reviewOwner.trust_score++
+        }
         return Status.OK
     }
 
@@ -280,9 +304,19 @@ fun voteOnReview(auth: Int, review_id: Int, is_positive: Boolean): Status {
             this.review = review
             this.is_positive = is_positive
         }
+        if (is_positive) {
+            reviewOwner.trust_score++
+        } else {
+            reviewOwner.trust_score--
+        }
     }
     else {
         vote.is_positive = is_positive
+        if (is_positive) {
+            reviewOwner.trust_score += 2
+        } else {
+            reviewOwner.trust_score -= 2
+        }
     }
 
     return Status.OK
