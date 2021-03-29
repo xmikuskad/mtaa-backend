@@ -185,8 +185,9 @@ fun addProduct(_name: String, _price: Int, category_ID: Int, brand_ID: Int): Boo
     return true
 }
 
-fun searchProducts(_name: String): List<Product> {
+fun searchProducts(_name: String, paging: Int): List<Product> {
     val products: Query = Products.select { Products.name like "%$_name%"}
+        .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
     return Product.wrapRows(products).toList()
 }
 
@@ -307,19 +308,19 @@ fun getReviews(product_id: Int, paging: Int, _orderBy: String?, _orderType: Stri
 
     when (_orderBy) {
         "created_at" -> {
-            // Tu budu query pre typ Column<DateTime>
+            // Query pre typ Column<DateTime>
             val query = Reviews.select { Reviews.product eq product_id }.orderBy(Reviews.created_at, orderType)
                 .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
             return Review.wrapRows(query).toList()
         }
         "score" -> {
-            // Tu budu query pre typ Column<Int>
+            // Query pre typ Column<Int>
             val query = Reviews.select { Reviews.product eq product_id }.orderBy(Reviews.score, orderType)
                 .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
             return Review.wrapRows(query).toList()
         }
         else -> {
-            // Tu budu query pre default order_by
+            // Query pre default order_by
             val query = Reviews.select { Reviews.product eq product_id }.orderBy(Reviews.id, orderType)
                 .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
             return Review.wrapRows(query).toList()

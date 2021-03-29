@@ -12,7 +12,7 @@ import java.lang.NumberFormatException
 
 fun Route.productRouting() {
     route("/products") {
-        post("/search") {
+        post("/search/{page}") {
             try {
                 val productInfoList: MutableList<ProductInfo> = mutableListOf()
                 val data = call.receive<NameInfo>()
@@ -20,8 +20,16 @@ fun Route.productRouting() {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
+                var page = parseInt(call, "page")
+                if (page == null) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
+                if (page!! <= 0) {
+                    page = 1
+                }
                 val productList = transaction {
-                    searchProducts(data.name)
+                    searchProducts(data.name, page!!)
                 }
                 for (product in productList) {
                     productInfoList.add(
@@ -134,17 +142,20 @@ fun Route.productRouting() {
                 return@get
             }
 
-            val page = parseInt(call, "page")
+            var page = parseInt(call, "page")
             if (page == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
+            }
+            if (page!! <= 0) {
+                page = 1
             }
             val reviewsInfo = mutableListOf<ReviewInfoItem>()
 
             transaction {
                 val reviews = getReviews(
                     id,
-                    page,
+                    page!!,
                     call.request.queryParameters["order_by"],
                     call.request.queryParameters["order_type"]
                 )

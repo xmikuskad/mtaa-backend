@@ -52,13 +52,15 @@ fun Route.categoryRouting() {
 
         get("{categoryID}/{page}") {
             val categoryID = parseInt(call, "categoryID")
-            val page = parseInt(call, "page")
+            var page = parseInt(call, "page")
 
             if (categoryID == null || page == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-
+            if (page <= 0) {
+                page = 1
+            }
 
             var products: List<Product> = listOf()
             try {
