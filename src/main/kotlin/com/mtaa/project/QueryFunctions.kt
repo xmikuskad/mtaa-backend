@@ -11,6 +11,7 @@ enum class Status {
  * User queries
  */
 const val PAGE_LIMIT = 5 //number of products loading in one batch
+const val DEFAULT_MIN = 0 //Minimal price
 
 fun createUser(_name:String, _password:String, _email:String, _trust_score:Int) {
     User.new {
@@ -78,26 +79,60 @@ fun getCategoryBrands(_id: Int): List<Brand> {
     return Brand.wrapRows(query).toList()
 }
 
-fun getCategoryProducts(_id:Int, paging:Int, _orderBy:String?,_orderType:String?): List<Product> {
+fun getCategoryProducts(_id:Int, paging:Int, _orderBy:String?,_orderType:String?, _minPrice:String?,
+                        _maxPrice:String?, _minScore:String?, _brands:String?): List<Product> {
 
-    var orderBy: Column<Int>? = null
-    when (_orderBy) {
-        "price" -> orderBy = Products.price
-        "score" -> orderBy = Products.score
+    val orderBy = when (_orderBy) {
+        "price" -> Products.price
+        "score" -> Products.score
+        else -> {
+            Products.id as Column<Int>
+        }
     }
 
-    val orderType:SortOrder = when (_orderType) {
+    val orderType: SortOrder = when (_orderType) {
         "asc" -> SortOrder.ASC
-        "desc" -> SortOrder.DESC
         else -> SortOrder.DESC
     }
 
-    val products: Query = if (orderBy == null)
-        Products.select { Products.category eq _id }.orderBy(Products.id, orderType)
+    var maxPrice = DEFAULT_MIN
+    var minPrice = DEFAULT_MIN
+    var minScore = DEFAULT_MIN
+    val products: Query
+    val brands : List<Int>
+    if (_minScore != null) {
+        minScore = _minScore.toInt()
+    }
+    if(_minPrice != null){
+        minPrice = _minPrice.toInt()
+    }
+    if(_maxPrice != null) {
+        maxPrice = _maxPrice.toInt()
+    }
+    else {
+        val product = Products.selectAll().orderBy(Products.price, SortOrder.DESC).firstOrNull()
+        if (product != null) {
+            maxPrice = Product.wrapRow(product).price
+        }
+    }
+    if(_brands != null) {
+        brands = _brands.split(",").map { it.toInt() }.toList()
+
+        products = Products.select {
+            Products.category eq _id and (Products.price greaterEq minPrice) and (Products.price lessEq maxPrice) and
+                    (Products.score greaterEq minScore) and (Products.brand inList brands)
+        }
+            .orderBy(orderBy, orderType)
             .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
-    else
-        Products.select { Products.category eq _id }.orderBy(orderBy, orderType)
+    }
+    else {
+        products = Products.select {
+            Products.category eq _id and (Products.price greaterEq minPrice) and (Products.price lessEq maxPrice) and
+                    (Products.score greaterEq minScore)
+        }
+            .orderBy(orderBy, orderType)
             .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+    }
 
     return Product.wrapRows(products).toList()
 }

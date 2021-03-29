@@ -8,6 +8,7 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.NullPointerException
+import java.lang.NumberFormatException
 
 fun Route.categoryRouting() {
     route("/categories") {
@@ -58,14 +59,34 @@ fun Route.categoryRouting() {
                 return@get
             }
 
+
             var products: List<Product> = listOf()
-            transaction {
-                products = getCategoryProducts(
-                    categoryID,
-                    page,
-                    call.request.queryParameters["order_by"],
-                    call.request.queryParameters["order_type"]
-                )
+            try {
+                transaction {
+                    products = getCategoryProducts(
+                        categoryID,
+                        page,
+                        call.request.queryParameters["order_by"],
+                        call.request.queryParameters["order_type"],
+                        call.request.queryParameters["min_price"],
+                        call.request.queryParameters["max_price"],
+                        call.request.queryParameters["min_score"],
+                        call.request.queryParameters["brands"]
+                    )
+                }
+            } catch (e: Exception) {
+                when (e) {
+                    //Fail to parse int
+                    is NumberFormatException -> {
+                        call.respond(HttpStatusCode.BadRequest)
+                        return@get
+                    }
+                    else -> {
+                        println(e.stackTraceToString())
+                        call.respond(HttpStatusCode.InternalServerError)
+                        return@get
+                    }
+                }
             }
 
             if (products.isEmpty()) {
