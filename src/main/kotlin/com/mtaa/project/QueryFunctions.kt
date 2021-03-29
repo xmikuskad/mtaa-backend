@@ -287,3 +287,17 @@ fun getReviews(product_id: Int, paging: Int, _orderBy: String?, _orderType: Stri
         }
     }
 }
+
+fun getPhotoPath(review_id: Int, _id:Int): Photo? {
+    val review = Review.find{Reviews.id eq review_id}.firstOrNull() ?: return null
+    return Photo.find{Photos.id eq _id and (Photos.review eq review.id) }.firstOrNull()
+}
+
+fun createPhoto(_src:String, review_id: Int):Boolean {
+    val _review = Review.find{Reviews.id eq review_id}.firstOrNull() ?: return false;
+    Photo.new {
+        src=_src
+        review=_review
+    }
+    return true
+}

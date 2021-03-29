@@ -40,11 +40,12 @@ fun Application.module() {
         categoryRouting()
         productRouting()
         reviewRouting()
+        photoRouting()
     }
 
     //Set up database connection
     Database.connect(
-        "jdbc:postgresql://localhost:5432/mtaa?currentSchema=mtaa", driver = "org.postgresql.Driver",
+        "jdbc:postgresql://localhost:5433/mtaa?currentSchema=mtaa", driver = "org.postgresql.Driver",
         user = "techtalk", password = "mtaaTechTalk0120"
     )
 }
