@@ -248,6 +248,12 @@ fun createReview(reviewPostInfo: ReviewPostInfo, auth: Int): Status {
         }
     }
 
+    val numberOfReviews = Reviews.select { Reviews.product eq product.id }.count()
+    val productScore = product.score
+
+    val newProductScore = ((numberOfReviews * productScore) + reviewPostInfo.score) / (numberOfReviews + 1)
+    product.score = newProductScore.toInt()
+
     return Status.OK
 }
 
@@ -258,6 +264,13 @@ fun updateReview(reviewPutInfo: ReviewPutInfo, review_id: Int, auth: Int): Statu
     if (review.user != user) {
         return Status.UNAUTHORIZED
     }
+
+    val product = review.product
+    val numberOfReviews = Reviews.select { Reviews.product eq product.id }.count()
+    val productScore = product.score
+
+    val newProductScore = ((numberOfReviews * productScore) - review.score + reviewPutInfo.score) / (numberOfReviews)
+    product.score = newProductScore.toInt()
 
     review.text = reviewPutInfo.text
     review.score = reviewPutInfo.score
