@@ -14,11 +14,11 @@ fun Route.categoryRouting() {
     route("/categories") {
 
         get {
-            val array : MutableList<CategoryInfo> = mutableListOf()
+            val array: MutableList<CategoryInfo> = mutableListOf()
             transaction {
-               val categories = Category.all()
-                for(category in categories){
-                    array.add(CategoryInfo(category.name,category.id.toString().toInt()))
+                val categories = Category.all()
+                for (category in categories) {
+                    array.add(CategoryInfo(category.name, category.id.toString().toInt()))
                 }
             }
 
@@ -26,33 +26,33 @@ fun Route.categoryRouting() {
         }
 
         get("{id}/brands") {
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
 
-            var brands : List<Brand> = listOf()
+            var brands: List<Brand> = listOf()
             transaction {
                 brands = getCategoryBrands(id)
             }
 
-            if(brands.isEmpty()) {
+            if (brands.isEmpty()) {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
 
-            val array : MutableList<BrandInfo> = mutableListOf()
-            for(item in brands) {
-                array.add(BrandInfo(item.name,item.id.toString().toInt()))
+            val array: MutableList<BrandInfo> = mutableListOf()
+            for (item in brands) {
+                array.add(BrandInfo(item.name, item.id.toString().toInt()))
             }
 
             call.respond(BrandsInfo(array))
         }
 
         get("{categoryID}/{page}") {
-            val categoryID = parseInt(call,"categoryID")
-            val page = parseInt(call,"page")
+            val categoryID = parseInt(call, "categoryID")
+            val page = parseInt(call, "page")
 
             if (categoryID == null || page == null) {
                 call.respond(HttpStatusCode.BadRequest)
@@ -110,6 +110,10 @@ fun Route.categoryRouting() {
 
             try {
                 val data = call.receive<NameInfo>()
+                if (data.name.length < MIN_NAME_LENGHT) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
                 transaction {
                     createCategory(data.name)
                 }
@@ -134,7 +138,7 @@ fun Route.categoryRouting() {
                 return@delete
             }
 
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
@@ -153,5 +157,4 @@ fun Route.categoryRouting() {
 
         }
     }
-
 }

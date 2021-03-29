@@ -12,14 +12,14 @@ import java.lang.NullPointerException
 fun Route.reviewRouting() {
     route("/reviews") {
         get("{id}") {
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
 
             val reviewInfo = getReviewInfoData(id)
-            if(reviewInfo == null){
+            if (reviewInfo == null) {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
@@ -28,7 +28,7 @@ fun Route.reviewRouting() {
         }
 
         post {
-            val auth = getID(call)
+            val auth = getIdFromAuth(call)
             if (auth == -1) {
                 call.respond(HttpStatusCode.Unauthorized)
                 return@post
@@ -37,7 +37,8 @@ fun Route.reviewRouting() {
             try {
                 val data = call.receive<ReviewPostInfo>()
 
-                if (data.attributes.equals(null)) {
+                //Validation checks
+                if (!validateReview(data.text, data.score, data.attributes)) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
@@ -73,13 +74,13 @@ fun Route.reviewRouting() {
             }
         }
         put("{id}") {
-            val auth = getID(call)
+            val auth = getIdFromAuth(call)
             if (auth == -1) {
                 call.respond(HttpStatusCode.Unauthorized)
                 return@put
             }
 
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@put
@@ -88,7 +89,8 @@ fun Route.reviewRouting() {
             try {
                 val data = call.receive<ReviewPutInfo>()
 
-                if (data.attributes.equals(null)) {
+                //Validation checks
+                if (!validateReview(data.text, data.score, data.attributes)) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
@@ -124,21 +126,7 @@ fun Route.reviewRouting() {
             }
         }
         put("{id}/like") {
-            val id = parseInt(call,"id")
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@put
-            }
-
-            val auth = getID(call)
-            if (auth == -1) {
-                call.respond(HttpStatusCode.Unauthorized)
-                return@put
-            }
-
-            val result = transaction {
-                voteOnReview(auth, id, true)
-            }
+            val result = addVoteToReview(call,true)
             when (result) {
                 Status.UNAUTHORIZED -> {
                     call.respond(HttpStatusCode.Unauthorized)
@@ -150,26 +138,16 @@ fun Route.reviewRouting() {
                 }
                 Status.OK -> {
                     call.respond(HttpStatusCode.OK)
+                    return@put
+                }
+                Status.BAD_REQUEST -> {
+                    call.respond(HttpStatusCode.BadRequest)
                     return@put
                 }
             }
         }
         put("{id}/dislike") {
-            val id = parseInt(call,"id")
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@put
-            }
-
-            val auth = getID(call)
-            if (auth == -1) {
-                call.respond(HttpStatusCode.Unauthorized)
-                return@put
-            }
-
-            val result = transaction {
-                voteOnReview(auth, id, false)
-            }
+            val result = addVoteToReview(call,false)
             when (result) {
                 Status.UNAUTHORIZED -> {
                     call.respond(HttpStatusCode.Unauthorized)
@@ -183,16 +161,20 @@ fun Route.reviewRouting() {
                     call.respond(HttpStatusCode.OK)
                     return@put
                 }
+                Status.BAD_REQUEST -> {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@put
+                }
             }
         }
         delete("{id}") {
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
             }
 
-            val auth = getID(call)
+            val auth = getIdFromAuth(call)
             if (auth == -1) {
                 call.respond(HttpStatusCode.Unauthorized)
                 return@delete
@@ -265,4 +247,29 @@ fun getReviewInfoData(id:Int): ReviewInfo? {
         likes, dislikes, product_id, review.score,
         user_id, review.created_at.toString()
     )
+}
+
+fun addVoteToReview(call: ApplicationCall, is_positive: Boolean): Status {
+    val id = parseInt(call, "id") ?: return Status.BAD_REQUEST
+
+    val auth = getIdFromAuth(call)
+    if (auth == -1) {
+        return Status.UNAUTHORIZED
+    }
+
+    return transaction {
+        voteOnReview(auth, id, is_positive)
+    }
+}
+
+fun validateReview(text:String,score:Int,attributes: MutableList<ReviewAttributePostPutInfo>):Boolean {
+    if (attributes.equals(null) || text.length < MIN_NAME_LENGHT || score < DEFAULT_MIN || score > MAX_SCORE) {
+        return false
+    }
+    for (attr in attributes) {
+        if (attr.text.length < MIN_NAME_LENGHT) {
+            return false
+        }
+    }
+    return true
 }

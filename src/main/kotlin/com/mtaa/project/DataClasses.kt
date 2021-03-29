@@ -9,6 +9,23 @@ import org.jetbrains.exposed.sql.jodatime.datetime
 import org.joda.time.DateTime
 
 /**
+ * Enumerations
+ */
+enum class Status {
+    UNAUTHORIZED, NOT_FOUND, OK, BAD_REQUEST
+}
+
+/**
+ * Constants
+ */
+
+const val MIN_NAME_LENGHT = 1 //Minimal character length for a name
+const val PAGE_LIMIT = 5 //number of products loading for one page
+const val DEFAULT_MIN = 0 //Minimal price
+const val MIN_LOGIN_LENGTH = 8 //Minimal character length for login email and password
+const val MAX_SCORE = 100 //Maximum score value
+
+/**
  * REST data
  */
 
@@ -62,10 +79,13 @@ data class ReviewPostInfo(val text: String, val attributes: MutableList<ReviewAt
                           val product_id: Int, val score: Int)
 
 data class ReviewAttributePostPutInfo(val text: String, val is_positive: Boolean)
+
 /**
- * Reviews PUT
- * */
+ * Reviews other
+ */
+
 data class ReviewPutInfo(val text: String, val attributes: MutableList<ReviewAttributePostPutInfo>, val score: Int)
+data class ReviewVotesInfo(val likes:Int, val dislikes:Int)
 
 /**
  * SQL data

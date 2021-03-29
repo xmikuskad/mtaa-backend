@@ -3,15 +3,9 @@ package com.mtaa.project
 import org.jetbrains.exposed.sql.*
 import org.joda.time.DateTime
 
-enum class Status {
-    UNAUTHORIZED, NOT_FOUND, OK
-}
-
 /**
  * User queries
  */
-const val PAGE_LIMIT = 5 //number of products loading in one batch
-const val DEFAULT_MIN = 0 //Minimal price
 
 fun createUser(_name:String, _password:String, _email:String, _trust_score:Int) {
     User.new {

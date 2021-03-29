@@ -89,8 +89,7 @@ fun Route.photoRouting() {
     }
 }
 
-fun createFileDirectory()
-{
+fun createFileDirectory() {
     val directory = File(DIRECTORY_NAME)
 
     if (!directory.exists()) {

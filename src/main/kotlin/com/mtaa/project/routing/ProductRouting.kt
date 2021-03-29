@@ -16,7 +16,10 @@ fun Route.productRouting() {
             try {
                 val productInfoList: MutableList<ProductInfo> = mutableListOf()
                 val data = call.receive<NameInfo>()
-
+                if (data.name.length < MIN_NAME_LENGHT) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
                 val productList = transaction {
                     searchProducts(data.name)
                 }
@@ -72,7 +75,7 @@ fun Route.productRouting() {
             try {
                 val data = call.receive<AddedProduct>()
                 // Integers not provided or less than 1
-                if (data.brand_id <= 0 || data.category_id <= 0 || data.price <= 0) {
+                if (data.brand_id <= 0 || data.category_id <= 0 || data.price <= 0 || data.name.length < MIN_NAME_LENGHT) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
@@ -164,7 +167,7 @@ fun Route.productRouting() {
                 }
             }
 
-            call.respond(reviewsInfo)
+            call.respond(ReviewsInfo(reviewsInfo))
         }
     }
 }

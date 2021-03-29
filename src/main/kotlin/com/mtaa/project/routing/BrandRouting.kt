@@ -11,7 +11,7 @@ import java.lang.NullPointerException
 
 fun Route.brandRouting() {
     route("/brands") {
-        post{
+        post {
             if (!isAdmin(call)) { //Check if user is admin
                 call.respond(HttpStatusCode.Unauthorized)
                 return@post
@@ -19,6 +19,10 @@ fun Route.brandRouting() {
 
             try {
                 val data = call.receive<NameInfo>()
+                if (data.name.length < MIN_NAME_LENGHT) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
                 transaction {
                     createBrand(data.name)
                 }
@@ -43,7 +47,7 @@ fun Route.brandRouting() {
                 return@delete
             }
 
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete

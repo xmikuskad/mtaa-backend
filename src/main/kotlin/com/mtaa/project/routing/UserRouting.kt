@@ -42,15 +42,10 @@ fun Route.userRouting() {
     }
 
     route("/users") {
-        put("{id}") {
+        put {
             try {
-                val id = call.parameters["id"]?.toInt()
-                if (id == null) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@put
-                }
-
-                if (!isAuthenticated(call, id)) { //Check if user is authenticated
+                val id = getIdFromAuth(call)
+                if (id < 0) { //Check if user is authenticated
                     call.respond(HttpStatusCode.Unauthorized)
                     return@put
                 }
@@ -89,7 +84,7 @@ fun Route.userRouting() {
         }
 
         get("{id}") {
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
@@ -106,6 +101,12 @@ fun Route.userRouting() {
         post {
             try {
                 val data = call.receive<RegisterInfo>()
+
+                if (data.name.length < MIN_NAME_LENGHT || data.email.length < MIN_LOGIN_LENGTH || data.password.length < MIN_LOGIN_LENGTH) {
+                    call.respond(HttpStatusCode.BadRequest)
+                    return@post
+                }
+
                 transaction {
                     createUser(data.name, data.password, data.email, 0)
                 }
@@ -130,7 +131,7 @@ fun Route.userRouting() {
                 return@delete
             }
 
-            val id = parseInt(call,"id")
+            val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@delete
