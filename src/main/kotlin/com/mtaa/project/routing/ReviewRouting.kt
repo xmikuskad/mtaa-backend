@@ -30,6 +30,32 @@ fun Route.reviewRouting() {
             // Review found
             call.respond(reviewInfo)
         }
+        get("recent") {
+
+            val reviews = transaction {
+                getRecentReview()
+            }
+            val reviewsInfo = mutableListOf<ReviewInfoItem>()
+            for (review in reviews) {
+                val data = getReviewInfoData(review.id.toString().toInt())
+                if (data != null) {
+                    reviewsInfo += ReviewInfoItem(
+                        data.text,
+                        data.attributes,
+                        data.photos,
+                        data.likes,
+                        data.dislikes,
+                        data.product_id,
+                        data.score,
+                        data.user_id,
+                        review.id.toString().toInt(),
+                        data.created_at
+                    )
+                }
+            }
+
+            call.respond(ReviewsInfo(reviewsInfo))
+        }
 
         post {
             val auth = getIdFromAuth(call)

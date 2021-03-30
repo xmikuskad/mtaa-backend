@@ -7,7 +7,6 @@ import io.ktor.features.*
 import io.ktor.gson.*
 import io.ktor.network.tls.certificates.*
 import org.jetbrains.exposed.sql.Database
-import org.jetbrains.exposed.sql.transactions.transaction
 import java.io.File
 import java.text.DateFormat
 
@@ -45,7 +44,7 @@ fun Application.module() {
 
     //Set up database connection
     Database.connect(
-        "jdbc:postgresql://localhost:5432/mtaa?currentSchema=mtaa", driver = "org.postgresql.Driver",
+        "jdbc:postgresql://localhost:5433/mtaa?currentSchema=mtaa", driver = "org.postgresql.Driver",
         user = "techtalk", password = "mtaaTechTalk0120"
     )
 }

@@ -1,4 +1,4 @@
-package com.mtaa.project
+package com.mtaa.project.security
 
 import io.ktor.network.tls.certificates.generateCertificate
 import java.io.File

@@ -8,13 +8,19 @@ import org.joda.time.DateTime
  * User queries
  */
 
-fun createUser(_name:String, _password:String, _email:String, _trust_score:Int) {
+fun createUser(_name:String, _password:String, _email:String, _trust_score:Int):Boolean {
+    //Check for email duplication
+    val user = User.find { Users.email eq _email }.firstOrNull()
+    if(user != null)
+        return true
+
     User.new {
         name = _name
         email = _email
         trust_score = _trust_score
         password = _password
     }
+    return false
 }
 
 fun updateUser(user:User, _name:String, _password:String, _email:String) {
@@ -389,6 +395,11 @@ fun getReviews(id: Int, paging: Int, _orderBy: String?, _orderType: String?, lis
             return Review.wrapRows(query).toList()
         }
     }
+}
+
+fun getRecentReview() :List<Review>{
+    val query = Reviews.selectAll().orderBy(Reviews.id,SortOrder.DESC).limit(PAGE_LIMIT)
+    return Review.wrapRows(query).toList()
 }
 
 fun getPhotoPath(review_id: Int, _id:Int): Photo? {

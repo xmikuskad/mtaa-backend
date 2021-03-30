@@ -1,6 +1,7 @@
 package com.mtaa.project.routing
 
 import com.mtaa.project.*
+import com.mtaa.project.security.getSecurePassword
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -17,8 +18,13 @@ fun Route.userRouting() {
             val data = call.receive<LoginInfo>()
             var id = -1
 
+            val password = getSecurePassword(data.password)
+            if(password==null){
+                call.respond(HttpStatusCode.InternalServerError)
+                return@post
+            }
             transaction {
-                id = (getUser(data.email, data.password)?.id ?: -1).toString().toInt()
+                id = (getUser(data.email, password)?.id ?: -1).toString().toInt()
             }
 
             if (id > 0) { //User found, return auth key
@@ -135,13 +141,23 @@ fun Route.userRouting() {
             try {
                 val data = call.receive<RegisterInfo>()
 
-                if (data.name.length < MIN_NAME_LENGHT || data.email.length < MIN_LOGIN_LENGTH || data.password.length < MIN_LOGIN_LENGTH) {
+                /*if (data.name.length < MIN_NAME_LENGHT || data.email.length < MIN_LOGIN_LENGTH || data.password.length < MIN_LOGIN_LENGTH) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
-                }
+                }*/
 
-                transaction {
-                    createUser(data.name, data.password, data.email, 0)
+                val password = getSecurePassword(data.password)
+                if(password==null){
+                    call.respond(HttpStatusCode.InternalServerError)
+                    return@post
+                }
+                var duplicate = false
+                duplicate = transaction {
+                    createUser(data.name, password, data.email, 0)
+                }
+                if(duplicate){
+                    call.respond(HttpStatusCode.Conflict)
+                    return@post
                 }
                 call.respond(HttpStatusCode.OK)
             } catch (e: Exception) { //If body doesnt contain all variables
