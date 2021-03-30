@@ -3,6 +3,7 @@ package com.mtaa.project
 import com.mtaa.project.routing.ReviewListType
 import org.jetbrains.exposed.sql.*
 import org.joda.time.DateTime
+import java.io.File
 
 /**
  * User queries
@@ -48,7 +49,7 @@ fun deleteUser(user_id: Int): Boolean {
 
     //Delete all connections with user
     for (review in reviewsList) {
-        Photos.deleteWhere { Photos.review eq review.id }
+        deletePhotos(review.id.toString().toInt())
         ReviewAttributes.deleteWhere { ReviewAttributes.review eq review.id }
         ReviewVotes.deleteWhere { ReviewVotes.review eq review.id }
         review.delete()
@@ -71,8 +72,12 @@ fun createBrand(_name:String) {
 fun deleteBrand(_id:Int):Boolean {
     val brand = Brand.find { Brands.id eq _id }.firstOrNull() ?: return false
 
+    val products = Product.wrapRows(Products.select{Products.brand eq brand.id}).toList()
+    for(product in products) {
+        deleteProduct(product.id.toString().toInt())
+    }
+
     CategoriesBrands.deleteWhere { CategoriesBrands.brand eq brand.id }
-    Products.deleteWhere { Products.brand eq brand.id }
 
     brand.delete()
     return true
@@ -91,8 +96,12 @@ fun createCategory(_name:String) {
 fun deleteCategory(_id:Int):Boolean {
     val category = Category.find { Categories.id eq _id }.firstOrNull() ?: return false
 
+    val products = Product.wrapRows(Products.select{Products.category eq category.id}).toList()
+    for(product in products) {
+        deleteProduct(product.id.toString().toInt())
+    }
+
     CategoriesBrands.deleteWhere { CategoriesBrands.category eq category.id }
-    Products.deleteWhere { Products.category eq category.id }
 
     category.delete()
     return true
@@ -185,7 +194,7 @@ fun deleteProduct(_id: Int): Boolean {
     val reviewsList = Review.wrapRows(reviews).toList()
 
     for (review in reviewsList) {
-        Photos.deleteWhere { Photos.review eq review.id }
+        deletePhotos(review.id.toString().toInt())
         ReviewAttributes.deleteWhere { ReviewAttributes.review eq review.id }
         ReviewVotes.deleteWhere { ReviewVotes.review eq review.id }
         review.delete()
@@ -198,7 +207,7 @@ fun deleteProduct(_id: Int): Boolean {
     //If not then delete connection
     if (test == null) {
         CategoryBrand.find { CategoriesBrands.brand eq product.brand.id and (CategoriesBrands.category eq product.category.id) }
-            .first().delete()
+            .firstOrNull()?.delete()
     }
 
     product.delete()
@@ -382,7 +391,7 @@ fun deleteReview(auth: Int, review_id: Int): Status {
 
     ReviewAttributes.deleteWhere { ReviewAttributes.review eq review.id }
     ReviewVotes.deleteWhere { ReviewVotes.review eq review.id }
-    Photos.deleteWhere { Photos.review eq review.id }
+    deletePhotos(review_id)
     Reviews.deleteWhere { (Reviews.id eq review.id) and (Reviews.user eq user.id) }
 
     return Status.OK
@@ -450,4 +459,16 @@ fun createPhoto(_src:String, review_id: Int):Boolean {
         review=_review
     }
     return true
+}
+
+fun deletePhotos(_review_id:Int) {
+    val photos = Photo.wrapRows(Photos.select{Photos.review eq _review_id}).toList()
+    for(photo in photos) {
+        try{
+            File(photo.src).delete()
+        }catch (e:Exception) {
+            println(e.stackTraceToString())
+        }
+        photo.delete()
+    }
 }
