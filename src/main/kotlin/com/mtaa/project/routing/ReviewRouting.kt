@@ -31,19 +31,17 @@ fun Route.reviewRouting() {
             call.respond(reviewInfo)
         }
         get("recent") {
-
             val reviews = transaction {
                 getRecentReview()
             }
-
             val reviewsInfo = getReviewsInfoItems(reviews)
 
             call.respond(ReviewsInfo(reviewsInfo))
         }
 
         post {
-            val auth = getIdFromAuth(call)
-            if (auth == -1) {
+            val id = getIdFromAuth(call)
+            if (id == -1) {
                 call.respond(HttpStatusCode.Unauthorized)
                 return@post
             }
@@ -58,7 +56,7 @@ fun Route.reviewRouting() {
                 }
 
                 val result = transaction {
-                    createReview(data, auth)
+                    createReview(data, id)
                 }
                 when (result) {
                     Status.UNAUTHORIZED -> {
@@ -151,6 +149,7 @@ fun Route.reviewRouting() {
                     return@put
                 }
                 Status.OK -> {
+                    //Return number or likes and dislikes
                     parseInt(call, "id")?.let { it1 -> getVotes(it1) }?.let { it2 -> call.respond(it2) }
                         ?: call.respond(
                             HttpStatusCode.InternalServerError
@@ -175,6 +174,7 @@ fun Route.reviewRouting() {
                     return@put
                 }
                 Status.OK -> {
+                    //Return number or likes and dislikes
                     parseInt(call, "id")?.let { it1 -> getVotes(it1) }?.let { it2 -> call.respond(it2) }
                         ?: call.respond(
                             HttpStatusCode.InternalServerError
@@ -269,6 +269,7 @@ fun getReviewInfoData(id:Int): ReviewInfo? {
     )
 }
 
+//Count number of votes and return
 fun getVotes(id:Int) :ReviewVotesInfo {
     val votes = transaction {
         getReviewVotes(id)
@@ -287,6 +288,7 @@ fun getVotes(id:Int) :ReviewVotesInfo {
     return ReviewVotesInfo(likes,dislikes)
 }
 
+//Add like or dislike to review
 fun addVoteToReview(call: ApplicationCall, is_positive: Boolean): Status {
     val id = parseInt(call, "id") ?: return Status.BAD_REQUEST
 
@@ -300,6 +302,7 @@ fun addVoteToReview(call: ApplicationCall, is_positive: Boolean): Status {
     }
 }
 
+//Input validation
 fun validateReview(text:String,score:Int,attributes: MutableList<ReviewAttributePostPutInfo>):Boolean {
     if (attributes.equals(null) || text.length < MIN_NAME_LENGHT || score < DEFAULT_MIN || score > MAX_SCORE) {
         return false

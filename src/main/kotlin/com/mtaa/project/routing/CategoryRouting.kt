@@ -58,6 +58,7 @@ fun Route.categoryRouting() {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
+            //To prevent negative pages
             if (page <= 0) {
                 page = 1
             }
@@ -91,6 +92,7 @@ fun Route.categoryRouting() {
                 }
             }
 
+            //If we didnt find any suitable products
             if (products.isEmpty()) {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
@@ -112,6 +114,7 @@ fun Route.categoryRouting() {
 
             try {
                 val data = call.receive<NameInfo>()
+                //Validation
                 if (data.name.length < MIN_NAME_LENGHT) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post

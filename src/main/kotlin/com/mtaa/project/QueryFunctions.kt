@@ -46,6 +46,7 @@ fun deleteUser(user_id: Int): Boolean {
     val reviews: Query = Reviews.select { Reviews.user eq user.id }
     val reviewsList = Review.wrapRows(reviews).toList()
 
+    //Delete all connections with user
     for (review in reviewsList) {
         Photos.deleteWhere { Photos.review eq review.id }
         ReviewAttributes.deleteWhere { ReviewAttributes.review eq review.id }
@@ -56,6 +57,10 @@ fun deleteUser(user_id: Int): Boolean {
     user.delete()
     return true
 }
+
+/**
+ * Brand queries
+ */
 
 fun createBrand(_name:String) {
     Brand.new {
@@ -72,6 +77,10 @@ fun deleteBrand(_id:Int):Boolean {
     brand.delete()
     return true
 }
+
+/**
+ * Category queries
+ */
 
 fun createCategory(_name:String) {
     Category.new {
@@ -100,6 +109,7 @@ fun getCategoryBrands(_id: Int): List<Brand> {
 fun getCategoryProducts(_id:Int, paging:Int, _orderBy:String?,_orderType:String?, _minPrice:String?,
                         _maxPrice:String?, _minScore:String?, _brands:String?): List<Product> {
 
+    //Select attribute for query order
     val orderBy = when (_orderBy) {
         "price" -> Products.price
         "score" -> Products.score
@@ -108,11 +118,13 @@ fun getCategoryProducts(_id:Int, paging:Int, _orderBy:String?,_orderType:String?
         }
     }
 
+    //Order type - ASC or DESC
     val orderType: SortOrder = when (_orderType) {
         "asc" -> SortOrder.ASC
         else -> SortOrder.DESC
     }
 
+    //This is option headers handling
     var maxPrice = DEFAULT_MIN
     var minPrice = DEFAULT_MIN
     var minScore = DEFAULT_MIN
@@ -128,11 +140,14 @@ fun getCategoryProducts(_id:Int, paging:Int, _orderBy:String?,_orderType:String?
         maxPrice = _maxPrice.toInt()
     }
     else {
+        //Find the actual max value od product
         val product = Products.selectAll().orderBy(Products.price, SortOrder.DESC).firstOrNull()
         if (product != null) {
             maxPrice = Product.wrapRow(product).price
         }
     }
+
+    //Filter by brands if we have them
     if(_brands != null) {
         brands = _brands.split(",").map { it.toInt() }.toList()
 
@@ -154,6 +169,10 @@ fun getCategoryProducts(_id:Int, paging:Int, _orderBy:String?,_orderType:String?
 
     return Product.wrapRows(products).toList()
 }
+
+/**
+ * Product queries
+ */
 
 fun getProductInfo(_id: Int): Product? {
     return Product.find { Products.id eq _id }.firstOrNull()
@@ -215,6 +234,10 @@ fun searchProducts(_name: String, paging: Int): List<Product> {
     return Product.wrapRows(products).toList()
 }
 
+/**
+ * Review queries
+ */
+
 fun getReviewInfo(_id: Int): Review? {
     return Review.find { Reviews.id eq _id }.firstOrNull()
 }
@@ -238,6 +261,7 @@ fun createReview(reviewPostInfo: ReviewPostInfo, auth: Int): Status {
     val product = Product.findById(reviewPostInfo.product_id) ?: return Status.NOT_FOUND
     val user = User.findById(auth) ?: return Status.UNAUTHORIZED
 
+    //Create review
     val newReview = Review.new {
         text = reviewPostInfo.text
         this.product = product
@@ -246,6 +270,7 @@ fun createReview(reviewPostInfo: ReviewPostInfo, auth: Int): Status {
         score = reviewPostInfo.score
     }
 
+    //Create attributes for review
     for (attribute in reviewPostInfo.attributes) {
         ReviewAttribute.new {
             text = attribute.text
@@ -254,6 +279,7 @@ fun createReview(reviewPostInfo: ReviewPostInfo, auth: Int): Status {
         }
     }
 
+    //Recalculating product scora base on review score
     val numberOfReviews = Reviews.select { Reviews.product eq product.id }.count()
     val productScore = product.score
 
@@ -267,10 +293,12 @@ fun updateReview(reviewPutInfo: ReviewPutInfo, review_id: Int, auth: Int): Statu
     val review = Review.findById(review_id) ?: return Status.NOT_FOUND
     val user = User.findById(auth) ?: return Status.UNAUTHORIZED
 
+    //If user is not creator of review
     if (review.user != user) {
         return Status.UNAUTHORIZED
     }
 
+    //Recalculating product scora base on review score
     val product = review.product
     val numberOfReviews = Reviews.select { Reviews.product eq product.id }.count()
     val productScore = product.score
@@ -281,6 +309,7 @@ fun updateReview(reviewPutInfo: ReviewPutInfo, review_id: Int, auth: Int): Statu
     review.text = reviewPutInfo.text
     review.score = reviewPutInfo.score
 
+    //Delete all review attributes and add new updated ones
     ReviewAttributes.deleteWhere { ReviewAttributes.review eq review_id }
 
     for (attribute in reviewPutInfo.attributes) {
@@ -300,11 +329,12 @@ fun voteOnReview(auth: Int, review_id: Int, is_positive: Boolean): Status {
 
     val reviewOwner = review.user
 
+    //Check if vote is the same. If thats the case then delete it
     val sameVote = ReviewVote.find {
-                (ReviewVotes.user eq user.id) and
+        (ReviewVotes.user eq user.id) and
                 (ReviewVotes.review eq review.id) and
                 (ReviewVotes.is_positive eq is_positive)
-            }.firstOrNull()
+    }.firstOrNull()
 
     if (sameVote != null) {
         sameVote.delete()
@@ -316,6 +346,7 @@ fun voteOnReview(auth: Int, review_id: Int, is_positive: Boolean): Status {
         return Status.OK
     }
 
+    //When we add the vote for first time or just change the vote
     val vote = ReviewVote.find { (ReviewVotes.user eq user.id) and (ReviewVotes.review eq review.id) }.firstOrNull()
     if (vote == null) {
         ReviewVote.new {
@@ -328,8 +359,7 @@ fun voteOnReview(auth: Int, review_id: Int, is_positive: Boolean): Status {
         } else {
             reviewOwner.trust_score--
         }
-    }
-    else {
+    } else {
         vote.is_positive = is_positive
         if (is_positive) {
             reviewOwner.trust_score += 2
@@ -345,6 +375,11 @@ fun deleteReview(auth: Int, review_id: Int): Status {
     val review = Review.findById(review_id) ?: return Status.NOT_FOUND
     val user = User.findById(auth) ?: return Status.UNAUTHORIZED
 
+    //Check if user is a creator of the review
+    if (review.user != user) {
+        return Status.UNAUTHORIZED
+    }
+
     ReviewAttributes.deleteWhere { ReviewAttributes.review eq review.id }
     ReviewVotes.deleteWhere { ReviewVotes.review eq review.id }
     Photos.deleteWhere { Photos.review eq review.id }
@@ -354,12 +389,13 @@ fun deleteReview(auth: Int, review_id: Int): Status {
 }
 
 fun getReviews(id: Int, paging: Int, _orderBy: String?, _orderType: String?, listType: ReviewListType): List<Review> {
-    val orderType:SortOrder = when (_orderType) {
+    val orderType: SortOrder = when (_orderType) {
         "asc" -> SortOrder.ASC
         "desc" -> SortOrder.DESC
         else -> SortOrder.DESC
     }
 
+    //Order by item has different types so we had to do this if else
     when (_orderBy) {
         "created_at" -> {
             // Query pre typ Column<DateTime>
@@ -376,7 +412,7 @@ fun getReviews(id: Int, paging: Int, _orderBy: String?, _orderType: String?, lis
             // Query pre typ Column<Int>
             if (listType == ReviewListType.PRODUCT_REVIEWS) {
                 val query = Reviews.select { Reviews.product eq id }.orderBy(Reviews.score, orderType)
-                   .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
+                    .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
                 return Review.wrapRows(query).toList()
             }
             val query = Reviews.select { Reviews.user eq id }.orderBy(Reviews.score, orderType)

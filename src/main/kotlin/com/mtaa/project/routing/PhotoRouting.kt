@@ -29,6 +29,7 @@ fun Route.photoRouting() {
                 return@get
             }
 
+            //Get path of photo from DB
             val photo = transaction {
                 getPhotoPath(id, photo_id)
             }
@@ -38,6 +39,7 @@ fun Route.photoRouting() {
                 return@get
             }
 
+            //Send image
             call.respondFile(File(photo.src))
         }
 
@@ -52,7 +54,7 @@ fun Route.photoRouting() {
             //Create folder if it doesnt exist
             createFileDirectory()
 
-            //random name
+            //Pseudo random name gen
             val name = UUID.randomUUID().toString()
             val file = File("$DIRECTORY_NAME/$name")
 
@@ -74,6 +76,7 @@ fun Route.photoRouting() {
                 return@post
             }
 
+            //Save path to DB
             val status = transaction {
                 createPhoto("$DIRECTORY_NAME/$name", id)
             }

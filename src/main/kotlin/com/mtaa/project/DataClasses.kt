@@ -20,7 +20,7 @@ enum class Status {
  */
 
 const val MIN_NAME_LENGHT = 1 //Minimal character length for a name
-const val PAGE_LIMIT = 5 //number of products loading for one page
+const val PAGE_LIMIT = 5 //Number of products loading for one page
 const val DEFAULT_MIN = 0 //Minimal price
 const val MIN_LOGIN_LENGTH = 8 //Minimal character length for login email and password
 const val MAX_SCORE = 100 //Maximum score value
@@ -87,9 +87,11 @@ data class ReviewAttributePostPutInfo(val text: String, val is_positive: Boolean
 data class ReviewPutInfo(val text: String, val attributes: MutableList<ReviewAttributePostPutInfo>, val score: Int)
 data class ReviewVotesInfo(val likes:Int, val dislikes:Int)
 
+
 /**
- * SQL data
+ * SQL tables for ORM
  */
+
 object Users: IntIdTable(){
     val password: Column<String> = varchar("password",255)
     val email: Column<String> = varchar("email",255)

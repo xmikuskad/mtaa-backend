@@ -18,11 +18,13 @@ fun Route.userRouting() {
             val data = call.receive<LoginInfo>()
             var id = -1
 
+            //Hash password
             val password = getSecurePassword(data.password)
             if(password==null){
                 call.respond(HttpStatusCode.InternalServerError)
                 return@post
             }
+
             transaction {
                 id = (getUser(data.email, password)?.id ?: -1).toString().toInt()
             }
@@ -49,20 +51,22 @@ fun Route.userRouting() {
 
     route("/users") {
         get("{page}") {
-            val auth = getIdFromAuth(call)
-            if (auth == -1) {
+            val id = getIdFromAuth(call)
+            if (id == -1) {
                 call.respond(HttpStatusCode.Unauthorized)
                 return@get
             }
+
             var page = parseInt(call, "page")
             if (page == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-            if (page!! <= 0) {
+            if (page <= 0) {
                 page = 1
             }
-            val user = transaction { getUserById(auth) }
+
+            val user = transaction { getUserById(id) }
             if (user == null) { //User not found
                 call.respond(HttpStatusCode.NotFound)
                 return@get
@@ -70,7 +74,7 @@ fun Route.userRouting() {
 
             val reviews = transaction {
                 getReviews(
-                    auth,
+                    id,
                     page!!,
                     call.request.queryParameters["order_by"],
                     call.request.queryParameters["order_type"],
@@ -92,6 +96,7 @@ fun Route.userRouting() {
                 val data = call.receive<RegisterInfo>()
                 var found = false
 
+                //Hash password
                 val password = getSecurePassword(data.password)
                 if(password==null){
                     call.respond(HttpStatusCode.InternalServerError)
@@ -130,12 +135,8 @@ fun Route.userRouting() {
 
         get("{id}/{page}") {
             val id = parseInt(call, "id")
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            }
             var page = parseInt(call, "page")
-            if (page == null) {
+            if (id == null || page == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
@@ -167,24 +168,29 @@ fun Route.userRouting() {
             try {
                 val data = call.receive<RegisterInfo>()
 
+                //Data validation
                 if (data.name.length < MIN_NAME_LENGHT || data.email.length < MIN_LOGIN_LENGTH || data.password.length < MIN_LOGIN_LENGTH) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
 
+                //Password hash
                 val password = getSecurePassword(data.password)
                 if(password==null){
                     call.respond(HttpStatusCode.InternalServerError)
                     return@post
                 }
-                var duplicate = false
-                duplicate = transaction {
+
+
+                val duplicate = transaction {
                     createUser(data.name, password, data.email, 0)
                 }
+                //If email is already registered
                 if(duplicate){
                     call.respond(HttpStatusCode.Conflict)
                     return@post
                 }
+
                 call.respond(HttpStatusCode.OK)
             } catch (e: Exception) { //If body doesnt contain all variables
                 when (e) {

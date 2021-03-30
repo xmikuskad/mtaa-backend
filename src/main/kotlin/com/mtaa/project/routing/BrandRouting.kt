@@ -19,6 +19,7 @@ fun Route.brandRouting() {
 
             try {
                 val data = call.receive<NameInfo>()
+                //Name validation
                 if (data.name.length < MIN_NAME_LENGHT) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post

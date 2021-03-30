@@ -10,6 +10,7 @@ import java.lang.Exception
 const val SECRET_KEY = "sO76akvMO54qFLVsB0Fxz4I7DAa3Mr21T87JTfYb180="
 const val ADMIN_KEY = "admin123"
 
+//Parse JWT token and return ID
 fun getIdFromAuth(call: ApplicationCall): Int {
     val auth: String? = call.request.header("auth")
     return if (auth != null) {
@@ -30,11 +31,13 @@ fun getIdFromAuth(call: ApplicationCall): Int {
     }
 }
 
+//Check if header contains admin key
 fun isAdmin(call: ApplicationCall):Boolean {
     val auth: String? = call.request.header("auth")
     return auth?.equals(ADMIN_KEY) ?: false
 }
 
+//Create auth key and return it
 fun getAuthKey(id:String):String {
     return Jwts.builder()
         .claim("id", id)

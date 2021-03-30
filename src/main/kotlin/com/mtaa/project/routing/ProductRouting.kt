@@ -16,18 +16,17 @@ fun Route.productRouting() {
             try {
                 val productInfoList: MutableList<ProductInfo> = mutableListOf()
                 val data = call.receive<NameInfo>()
-                if (data.name.length < MIN_NAME_LENGHT) {
-                    call.respond(HttpStatusCode.BadRequest)
-                    return@post
-                }
                 var page = parseInt(call, "page")
-                if (page == null) {
+                //Data validation
+                if (data.name.length < MIN_NAME_LENGHT || page == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
                 if (page <= 0) {
                     page = 1
                 }
+
+                //Get search results
                 val productList = transaction {
                     searchProducts(data.name, page!!)
                 }
@@ -63,6 +62,7 @@ fun Route.productRouting() {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
+
             val product = transaction {
                 getProductInfo(id)
             }
@@ -82,11 +82,12 @@ fun Route.productRouting() {
 
             try {
                 val data = call.receive<AddedProduct>()
-                // Integers not provided or less than 1
+                // Data validation
                 if (data.brand_id <= 0 || data.category_id <= 0 || data.price <= 0 || data.name.length < MIN_NAME_LENGHT) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
+
                 val result = transaction {
                     addProduct(data.name, data.price, data.category_id, data.brand_id)
                 }
@@ -103,8 +104,6 @@ fun Route.productRouting() {
                     is ContentTransformationException -> call.respond(HttpStatusCode.BadRequest)
                     //Some values missing in payload
                     is NullPointerException -> call.respond(HttpStatusCode.BadRequest)
-                    //Fail to parse id
-                    is NumberFormatException -> call.respond(HttpStatusCode.BadRequest)
                     else -> {
                         println(e.stackTraceToString())
                         call.respond(HttpStatusCode.InternalServerError)
@@ -137,13 +136,8 @@ fun Route.productRouting() {
 
         get("{id}/{page}") {
             val id = parseInt(call, "id")
-            if (id == null) {
-                call.respond(HttpStatusCode.BadRequest)
-                return@get
-            }
-
             var page = parseInt(call, "page")
-            if (page == null) {
+            if (id == null || page == null) {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }

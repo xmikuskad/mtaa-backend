@@ -4,6 +4,7 @@ import java.security.NoSuchAlgorithmException
 
 import java.security.MessageDigest
 
+//MD5 hashing bol prevzany zo stranky https://howtodoinjava.com/security/how-to-generate-secure-password-hash-md5-sha-pbkdf2-bcrypt-examples/
 fun getSecurePassword(passwordToHash: String): String? {
     val generatedPassword: String?
     try {
@@ -12,10 +13,10 @@ fun getSecurePassword(passwordToHash: String): String? {
         val bytes = md.digest()
         val sb = StringBuilder()
         for (aByte in bytes) {
-            sb.append(Integer.toString((aByte.toInt() and 0xff) + 0x100, 16).substring(1))
+            sb.append(((aByte.toInt() and 0xff) + 0x100).toString(16).substring(1))
         }
         generatedPassword = sb.toString()
-    } catch (e: NoSuchAlgorithmException) {
+    } catch (e: NoSuchAlgorithmException) { //Shouldnt happen
         e.printStackTrace()
         return null
     }
