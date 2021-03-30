@@ -103,13 +103,17 @@ fun Route.userRouting() {
                     return@put
                 }
 
+                var duplicate = false
                 transaction {
                     getUserById(id)?.let {
-                        updateUser(it, data.name, password, data.email)
+                        duplicate = updateUser(it, data.name, password, data.email)
                         found = true
                     }
                 }
-
+                if(duplicate){
+                    call.respond(HttpStatusCode.Conflict)
+                    return@put
+                }
                 if (found) { //Change succesful
                     call.respond(HttpStatusCode.OK)
                 } else { //User not found
