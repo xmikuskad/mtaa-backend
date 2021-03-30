@@ -82,9 +82,15 @@ fun Route.userRouting() {
                 val data = call.receive<RegisterInfo>()
                 var found = false
 
+                val password = getSecurePassword(data.password)
+                if(password==null){
+                    call.respond(HttpStatusCode.InternalServerError)
+                    return@put
+                }
+
                 transaction {
                     getUserById(id)?.let {
-                        updateUser(it, data.name, data.password, data.email)
+                        updateUser(it, data.name, password, data.email)
                         found = true
                     }
                 }
