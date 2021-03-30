@@ -9,48 +9,6 @@
 			"name": "User",
 			"item": [
 				{
-					"name": "Update user info",
-					"protocolProfileBehavior": {
-						"disabledSystemHeaders": {
-							"user-agent": true,
-							"accept": true,
-							"accept-encoding": true,
-							"connection": true
-						}
-					},
-					"request": {
-						"method": "PUT",
-						"header": [
-							{
-								"key": "auth",
-								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"email\":\"admin3\", \"password\":\"admin\", \"name\":\"NewName\"}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/users/3",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"users",
-								"3"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Get logged-in user info",
 					"request": {
 						"method": "GET",
@@ -76,6 +34,26 @@
 					"response": []
 				},
 				{
+					"name": "Get user info by ID",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/users/3/1",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"3",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Login user",
 					"protocolProfileBehavior": {
 						"disabledSystemHeaders": {
@@ -89,7 +67,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\"email\":\"admin3\", \"password\":\"admin\"}",
+							"raw": "{\"email\":\"admin3\", \"password\":\"PXvlDZk77e\"}",
 							"options": {
 								"raw": {
 									"language": "json"
@@ -145,6 +123,48 @@
 					"response": []
 				},
 				{
+					"name": "Update user info",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {
+							"user-agent": true,
+							"accept": true,
+							"accept-encoding": true,
+							"connection": true
+						}
+					},
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "auth",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"email\":\"admin3\", \"password\":\"admin\", \"name\":\"NewName\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/users/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"users",
+								"3"
+							]
+						}
+					},
+					"response": []
+				},
+				{
 					"name": "Delete user",
 					"request": {
 						"method": "DELETE",
@@ -164,26 +184,6 @@
 							"path": [
 								"users",
 								"9"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Get user info by ID",
-					"request": {
-						"method": "GET",
-						"header": [],
-						"url": {
-							"raw": "localhost:8080/users/3/1",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"users",
-								"3",
-								"1"
 							]
 						}
 					},
@@ -296,64 +296,6 @@
 					"response": []
 				},
 				{
-					"name": "Delete category",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "auth",
-								"value": "admin123",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "localhost:8080/categories/3",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"categories",
-								"3"
-							]
-						}
-					},
-					"response": []
-				},
-				{
-					"name": "Create category",
-					"request": {
-						"method": "POST",
-						"header": [
-							{
-								"key": "auth",
-								"value": "admin123",
-								"type": "text"
-							}
-						],
-						"body": {
-							"mode": "raw",
-							"raw": "{\"name\":\"cat3\"}",
-							"options": {
-								"raw": {
-									"language": "json"
-								}
-							}
-						},
-						"url": {
-							"raw": "localhost:8080/categories",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"categories"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Get category products ordered by price asc",
 					"request": {
 						"method": "GET",
@@ -444,6 +386,64 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "Create category",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "auth",
+								"value": "admin123",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\"name\":\"cat3\"}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/categories",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categories"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete category",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "auth",
+								"value": "admin123",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/categories/3",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"categories",
+								"3"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -503,31 +503,6 @@
 					"response": []
 				},
 				{
-					"name": "Delete product",
-					"request": {
-						"method": "DELETE",
-						"header": [
-							{
-								"key": "auth",
-								"value": "admin123",
-								"type": "text"
-							}
-						],
-						"url": {
-							"raw": "localhost:8080/products/2",
-							"host": [
-								"localhost"
-							],
-							"port": "8080",
-							"path": [
-								"products",
-								"2"
-							]
-						}
-					},
-					"response": []
-				},
-				{
 					"name": "Search products",
 					"request": {
 						"method": "POST",
@@ -550,6 +525,31 @@
 							"path": [
 								"products",
 								"search",
+								"2"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete product",
+					"request": {
+						"method": "DELETE",
+						"header": [
+							{
+								"key": "auth",
+								"value": "admin123",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "localhost:8080/products/2",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"products",
 								"2"
 							]
 						}
@@ -582,7 +582,7 @@
 					"response": []
 				},
 				{
-					"name": "Get one review info",
+					"name": "Get review info by ID",
 					"request": {
 						"method": "GET",
 						"header": [],
@@ -595,6 +595,46 @@
 							"path": [
 								"reviews",
 								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Recent reviews",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/reviews/recent",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"recent"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get photo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/reviews/4/photo/5",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"4",
+								"photo",
+								"5"
 							]
 						}
 					},
@@ -628,6 +668,68 @@
 							"port": "8080",
 							"path": [
 								"reviews"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send binary photo",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "file",
+							"file": {
+								"src": "/C:/Users/Dominik/Desktop/foto.png"
+							}
+						},
+						"url": {
+							"raw": "localhost:8080/reviews/4/photo",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"4",
+								"photo"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Send multipart photo",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "formdata",
+							"formdata": [
+								{
+									"key": "photo.jpg",
+									"type": "file",
+									"src": "/C:/Users/Dominik/Desktop/foto.png"
+								}
+							]
+						},
+						"url": {
+							"raw": "localhost:8080/reviews/4/photo",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"4",
+								"photo"
 							]
 						}
 					},
@@ -731,14 +833,43 @@
 							}
 						],
 						"url": {
-							"raw": "localhost:8080/reviews/4",
+							"raw": "localhost:8080/reviews/4/photo/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"4"
+								"4",
+								"photo",
+								"1"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Delete photo",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "localhost:8080/reviews/4/photo/1?auth=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+							"host": [
+								"localhost"
+							],
+							"port": "8080",
+							"path": [
+								"reviews",
+								"4",
+								"photo",
+								"1"
+							],
+							"query": [
+								{
+									"key": "auth",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA"
+								}
 							]
 						}
 					},
