@@ -59,7 +59,7 @@ fun Route.userRouting() {
                 call.respond(HttpStatusCode.BadRequest)
                 return@get
             }
-            if (page <= 0) {
+            if (page!! <= 0) {
                 page = 1
             }
             val user = transaction { getUserById(auth) }
@@ -67,7 +67,17 @@ fun Route.userRouting() {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
-            val reviewsInfo = getReviewsInfoItems(call, auth, page, ReviewListType.USER_REVIEWS)
+
+            val reviews = transaction {
+                getReviews(
+                    auth,
+                    page!!,
+                    call.request.queryParameters["order_by"],
+                    call.request.queryParameters["order_type"],
+                    ReviewListType.USER_REVIEWS
+                )
+            }
+            val reviewsInfo = getReviewsInfoItems(reviews)
 
             call.respond(UserInfo(user.name, user.trust_score, reviewsInfo))
         }
@@ -138,7 +148,17 @@ fun Route.userRouting() {
                 call.respond(HttpStatusCode.NotFound)
                 return@get
             }
-            val reviewsInfo = getReviewsInfoItems(call, id, page!!, ReviewListType.USER_REVIEWS)
+
+            val reviews = transaction {
+                getReviews(
+                    id,
+                    page!!,
+                    call.request.queryParameters["order_by"],
+                    call.request.queryParameters["order_type"],
+                    ReviewListType.USER_REVIEWS
+                )
+            }
+            val reviewsInfo = getReviewsInfoItems(reviews)
 
             call.respond(UserInfo(user.name, user.trust_score, reviewsInfo))
         }

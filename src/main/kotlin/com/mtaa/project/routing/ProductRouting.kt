@@ -150,7 +150,17 @@ fun Route.productRouting() {
             if (page!! <= 0) {
                 page = 1
             }
-            val reviewsInfo = getReviewsInfoItems(call, id, page!!, ReviewListType.PRODUCT_REVIEWS)
+
+            val reviews = transaction {
+               getReviews(
+                    id,
+                    page!!,
+                    call.request.queryParameters["order_by"],
+                    call.request.queryParameters["order_type"],
+                    ReviewListType.PRODUCT_REVIEWS
+               )
+            }
+            val reviewsInfo = getReviewsInfoItems(reviews)
 
             call.respond(ReviewsInfo(reviewsInfo))
         }

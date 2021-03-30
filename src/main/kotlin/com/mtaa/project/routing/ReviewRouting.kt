@@ -35,24 +35,8 @@ fun Route.reviewRouting() {
             val reviews = transaction {
                 getRecentReview()
             }
-            val reviewsInfo = mutableListOf<ReviewInfoItem>()
-            for (review in reviews) {
-                val data = getReviewInfoData(review.id.toString().toInt())
-                if (data != null) {
-                    reviewsInfo += ReviewInfoItem(
-                        data.text,
-                        data.attributes,
-                        data.photos,
-                        data.likes,
-                        data.dislikes,
-                        data.product_id,
-                        data.score,
-                        data.user_id,
-                        review.id.toString().toInt(),
-                        data.created_at
-                    )
-                }
-            }
+
+            val reviewsInfo = getReviewsInfoItems(reviews)
 
             call.respond(ReviewsInfo(reviewsInfo))
         }
@@ -328,33 +312,24 @@ fun validateReview(text:String,score:Int,attributes: MutableList<ReviewAttribute
     return true
 }
 
-fun getReviewsInfoItems(call: ApplicationCall, id: Int, page: Int, listType: ReviewListType): MutableList<ReviewInfoItem> {
+fun getReviewsInfoItems(reviews: List<Review>): MutableList<ReviewInfoItem> {
     val reviewsInfo = mutableListOf<ReviewInfoItem>()
 
-    transaction {
-        val reviews = getReviews(
-            id,
-            page,
-            call.request.queryParameters["order_by"],
-            call.request.queryParameters["order_type"],
-            listType
-        )
-        for (review in reviews) {
-            val data = getReviewInfoData(review.id.toString().toInt())
-            if (data != null) {
-                reviewsInfo += ReviewInfoItem(
-                    data.text,
-                    data.attributes,
-                    data.photos,
-                    data.likes,
-                    data.dislikes,
-                    data.product_id,
-                    data.score,
-                    data.user_id,
-                    review.id.toString().toInt(),
-                    data.created_at
-                )
-            }
+    for (review in reviews) {
+        val data = getReviewInfoData(review.id.toString().toInt())
+        if (data != null) {
+            reviewsInfo += ReviewInfoItem(
+                data.text,
+                data.attributes,
+                data.photos,
+                data.likes,
+                data.dislikes,
+                data.product_id,
+                data.score,
+                data.user_id,
+                review.id.toString().toInt(),
+                data.created_at
+            )
         }
     }
 
