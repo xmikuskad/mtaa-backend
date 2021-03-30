@@ -1,6 +1,7 @@
 package com.mtaa.project.routing
 
 import com.mtaa.project.*
+import com.mtaa.project.security.getIdFromAuth
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -32,7 +33,7 @@ fun Route.reviewRouting() {
         }
         get("recent") {
             val reviews = transaction {
-                getRecentReview()
+                getRecentReviews()
             }
             val reviewsInfo = getReviewsInfoItems(reviews)
 
@@ -138,8 +139,7 @@ fun Route.reviewRouting() {
             }
         }
         put("{id}/like") {
-            val result = addVoteToReview(call, true)
-            when (result) {
+            when (addVoteToReview(call, true)) {
                 Status.UNAUTHORIZED -> {
                     call.respond(HttpStatusCode.Unauthorized)
                     return@put
@@ -163,8 +163,7 @@ fun Route.reviewRouting() {
             }
         }
         put("{id}/dislike") {
-            val result = addVoteToReview(call, false)
-            when (result) {
+            when (addVoteToReview(call, false)) {
                 Status.UNAUTHORIZED -> {
                     call.respond(HttpStatusCode.Unauthorized)
                     return@put

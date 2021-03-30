@@ -1,7 +1,10 @@
 package com.mtaa.project.routing
 
 import com.mtaa.project.*
+import com.mtaa.project.security.getAuthKey
+import com.mtaa.project.security.getIdFromAuth
 import com.mtaa.project.security.getSecurePassword
+import com.mtaa.project.security.isAdmin
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -103,18 +106,14 @@ fun Route.userRouting() {
                     return@put
                 }
 
-                var duplicate = false
                 transaction {
                     getUserById(id)?.let {
-                        duplicate = updateUser(it, data.name, password, data.email)
+                        updateUser(it, data.name, password, data.email)
                         found = true
                     }
                 }
-                if(duplicate){
-                    call.respond(HttpStatusCode.Conflict)
-                    return@put
-                }
-                if (found) { //Change succesful
+
+                if (found) { //Change successful
                     call.respond(HttpStatusCode.OK)
                 } else { //User not found
                     call.respond(HttpStatusCode.NotFound)

@@ -448,7 +448,7 @@ fun getReviews(id: Int, paging: Int, _orderBy: String?, _orderType: String?, lis
     }
 }
 
-fun getRecentReview() :List<Review>{
+fun getRecentReviews(): List<Review>{
     val query = Reviews.selectAll().orderBy(Reviews.id,SortOrder.DESC).limit(PAGE_LIMIT)
     return Review.wrapRows(query).toList()
 }
