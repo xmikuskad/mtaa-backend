@@ -234,14 +234,14 @@ fun getReviewInfoData(id:Int): ReviewInfo? {
     val votes = transaction {
         getReviewVotes(id)
     }
-    val photosInfo: MutableList<PhotoInfo> = mutableListOf()
+    val photosInfo: MutableList<ImageInfo> = mutableListOf()
     for (photo in photos) {
-        photosInfo.add(PhotoInfo(photo.id.toString().toInt()))
+        photosInfo.add(ImageInfo(photo.id.toString().toInt()))
     }
 
     val attributesInfo: MutableList<ReviewAttributeInfo> = mutableListOf()
     for (attribute in attributes) {
-        attributesInfo.add(ReviewAttributeInfo(attribute.text, attribute.is_positive, id))
+        attributesInfo.add(ReviewAttributeInfo(attribute.text, attribute.is_positive))
     }
 
     var likes = 0
@@ -324,7 +324,7 @@ fun getReviewsInfoItems(reviews: List<Review>): MutableList<ReviewInfoItem> {
             reviewsInfo += ReviewInfoItem(
                 data.text,
                 data.attributes,
-                data.photos,
+                data.images,
                 data.likes,
                 data.dislikes,
                 data.product_id,

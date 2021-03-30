@@ -1,7 +1,6 @@
 package com.mtaa.project.routing
 
-import com.mtaa.project.createPhoto
-import com.mtaa.project.getPhotoPath
+import com.mtaa.project.*
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -43,11 +42,55 @@ fun Route.photoRouting() {
             call.respondFile(File(photo.src))
         }
 
+        delete("{id}/photo/{photo_id}") {
+            val id = parseInt(call, "id")
+            val photo_id = parseInt(call, "photo_id")
+            val user_id = getIdFromAuth(call)
+
+            if (user_id == -1) {
+                call.respond(HttpStatusCode.Unauthorized)
+                return@delete
+            }
+            if (id == null || photo_id == null) {
+                call.respond(HttpStatusCode.BadRequest)
+                return@delete
+            }
+
+            //Get path of photo from DB
+            val result = transaction {
+                if(checkPhotoOwnership(user_id,id,photo_id))    //Validate ownership
+                    deletePhoto(photo_id)
+                else
+                    false
+            }
+
+            if (!result) {
+                call.respond(HttpStatusCode.NotFound)
+                return@delete
+            }
+
+            //Send image
+            call.respond(HttpStatusCode.OK)
+        }
+
 
         post("{id}/photo") {
             val id = parseInt(call, "id")
             if (id == null) {
                 call.respond(HttpStatusCode.BadRequest)
+                return@post
+            }
+            val user_id = getIdFromAuth(call)
+            if (user_id == -1) {
+                call.respond(HttpStatusCode.Unauthorized)
+                return@post
+            }
+
+            val isOwner = transaction {
+                checkReviewOwnership(user_id,id)
+            }
+            if(!isOwner){
+                call.respond(HttpStatusCode.Unauthorized)
                 return@post
             }
 

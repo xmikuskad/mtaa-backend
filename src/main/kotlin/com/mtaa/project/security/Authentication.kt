@@ -33,7 +33,7 @@ fun getIdFromAuth(call: ApplicationCall): Int {
 
 //Check if header contains admin key
 fun isAdmin(call: ApplicationCall):Boolean {
-    val auth: String? = call.request.header("auth")
+    val auth: String? = call.request.header("admin")
     return auth?.equals(ADMIN_KEY) ?: false
 }
 

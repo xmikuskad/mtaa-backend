@@ -472,3 +472,27 @@ fun deletePhotos(_review_id:Int) {
         photo.delete()
     }
 }
+
+fun checkPhotoOwnership(_user_id:Int, _review_id: Int,_photo_id:Int):Boolean {
+    val photo = Photo.find { Photos.id eq _photo_id }.firstOrNull() ?: return false
+    Review.find { Reviews.user eq _user_id and (Reviews.id eq photo.review.id) and (Reviews.id eq _review_id) }
+        .firstOrNull() ?: return false
+    return true
+}
+
+fun checkReviewOwnership(_user_id:Int, _review_id: Int):Boolean {
+    Review.find{Reviews.user eq _user_id and (Reviews.id eq _review_id)}.firstOrNull()?:return false
+    return true
+}
+
+fun deletePhoto(_id:Int):Boolean {
+    val photo = Photo.find{Photos.id eq _id}.firstOrNull() ?: return false
+    try{
+        File(photo.src).delete()
+    }catch (e:Exception) {
+        println(e.stackTraceToString())
+        return false
+    }
+    photo.delete()
+    return true
+}
