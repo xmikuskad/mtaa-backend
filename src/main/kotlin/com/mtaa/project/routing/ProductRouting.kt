@@ -1,6 +1,7 @@
 package com.mtaa.project.routing
 
 import com.mtaa.project.*
+import com.mtaa.project.security.isAdmin
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -8,7 +9,6 @@ import io.ktor.response.*
 import io.ktor.routing.*
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.NullPointerException
-import java.lang.NumberFormatException
 
 fun Route.productRouting() {
     route("/products") {

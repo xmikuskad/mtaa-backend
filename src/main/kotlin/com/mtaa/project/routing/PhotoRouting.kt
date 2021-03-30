@@ -1,6 +1,7 @@
 package com.mtaa.project.routing
 
 import com.mtaa.project.*
+import com.mtaa.project.security.getIdFromAuth
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*
@@ -124,7 +125,7 @@ fun Route.photoRouting() {
                 createPhoto("$DIRECTORY_NAME/$name", id)
             }
 
-            //If review wasnt found
+            //If review wasn't found
             if (!status) {
                 call.respond(HttpStatusCode.NotFound)
             }

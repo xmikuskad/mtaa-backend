@@ -1,6 +1,7 @@
 package com.mtaa.project.routing
 
 import com.mtaa.project.*
+import com.mtaa.project.security.isAdmin
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.request.*
@@ -59,7 +60,7 @@ fun Route.brandRouting() {
                 found = deleteBrand(id)
             }
 
-            if (found) { //Record succesfully deleted
+            if (found) { //Record successfully deleted
                 call.respond(HttpStatusCode.OK)
             } else { //If we didnt find any record to delete
                 call.respond(HttpStatusCode.NotFound)

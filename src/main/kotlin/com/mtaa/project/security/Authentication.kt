@@ -1,4 +1,4 @@
-package com.mtaa.project
+package com.mtaa.project.security
 
 import io.jsonwebtoken.Jwts
 import io.jsonwebtoken.security.Keys
