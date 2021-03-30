@@ -15,7 +15,7 @@
 						"header": [
 							{
 								"key": "auth",
-								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEifQ.zvXlkbw2vR5HeakC4qwwHH81i04bV4nzJCeWf-f3hMw",
 								"type": "text"
 							}
 						],
@@ -137,7 +137,7 @@
 						"header": [
 							{
 								"key": "auth",
-								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEifQ.zvXlkbw2vR5HeakC4qwwHH81i04bV4nzJCeWf-f3hMw",
 								"type": "text"
 							}
 						],
@@ -170,7 +170,7 @@
 						"method": "DELETE",
 						"header": [
 							{
-								"key": "auth",
+								"key": "admin",
 								"value": "admin123",
 								"type": "text"
 							}
@@ -200,7 +200,7 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "auth",
+								"key": "admin",
 								"value": "admin123",
 								"type": "text"
 							}
@@ -233,7 +233,7 @@
 						"method": "DELETE",
 						"header": [
 							{
-								"key": "auth",
+								"key": "admin",
 								"value": "admin123",
 								"type": "text"
 							}
@@ -281,14 +281,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/categories/1/brands",
+							"raw": "localhost:8080/categories/56/brands",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"categories",
-								"1",
+								"56",
 								"brands"
 							]
 						}
@@ -393,7 +393,7 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "auth",
+								"key": "admin",
 								"value": "admin123",
 								"type": "text"
 							}
@@ -426,7 +426,7 @@
 						"method": "DELETE",
 						"header": [
 							{
-								"key": "auth",
+								"key": "admin",
 								"value": "admin123",
 								"type": "text"
 							}
@@ -475,7 +475,7 @@
 						"method": "POST",
 						"header": [
 							{
-								"key": "auth",
+								"key": "admin",
 								"value": "admin123",
 								"type": "text"
 							}
@@ -537,7 +537,7 @@
 						"method": "DELETE",
 						"header": [
 							{
-								"key": "auth",
+								"key": "admin",
 								"value": "admin123",
 								"type": "text"
 							}
@@ -587,14 +587,14 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/reviews/1",
+							"raw": "localhost:8080/reviews/98",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"1"
+								"98"
 							]
 						}
 					},
@@ -625,16 +625,16 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": "localhost:8080/reviews/4/photo/5",
+							"raw": "localhost:8080/reviews/98/photo/98",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"4",
+								"98",
 								"photo",
-								"5"
+								"98"
 							]
 						}
 					},
@@ -647,7 +647,7 @@
 						"header": [
 							{
 								"key": "auth",
-								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEifQ.zvXlkbw2vR5HeakC4qwwHH81i04bV4nzJCeWf-f3hMw",
 								"type": "text"
 							}
 						],
@@ -742,7 +742,7 @@
 						"header": [
 							{
 								"key": "auth",
-								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEifQ.zvXlkbw2vR5HeakC4qwwHH81i04bV4nzJCeWf-f3hMw",
 								"type": "text"
 							}
 						],
@@ -776,7 +776,7 @@
 						"header": [
 							{
 								"key": "auth",
-								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEifQ.zvXlkbw2vR5HeakC4qwwHH81i04bV4nzJCeWf-f3hMw",
 								"type": "text"
 							}
 						],
@@ -802,7 +802,7 @@
 						"header": [
 							{
 								"key": "auth",
-								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEifQ.zvXlkbw2vR5HeakC4qwwHH81i04bV4nzJCeWf-f3hMw",
 								"type": "text"
 							}
 						],
@@ -828,21 +828,19 @@
 						"header": [
 							{
 								"key": "auth",
-								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEifQ.zvXlkbw2vR5HeakC4qwwHH81i04bV4nzJCeWf-f3hMw",
 								"type": "text"
 							}
 						],
 						"url": {
-							"raw": "localhost:8080/reviews/4/photo/1",
+							"raw": "localhost:8080/reviews/4",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"4",
-								"photo",
-								"1"
+								"4"
 							]
 						}
 					},
@@ -852,24 +850,24 @@
 					"name": "Delete photo",
 					"request": {
 						"method": "DELETE",
-						"header": [],
+						"header": [
+							{
+								"key": "auth",
+								"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjEifQ.zvXlkbw2vR5HeakC4qwwHH81i04bV4nzJCeWf-f3hMw",
+								"type": "text"
+							}
+						],
 						"url": {
-							"raw": "localhost:8080/reviews/4/photo/1?auth=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA",
+							"raw": "localhost:8080/reviews/1/photo/1",
 							"host": [
 								"localhost"
 							],
 							"port": "8080",
 							"path": [
 								"reviews",
-								"4",
+								"1",
 								"photo",
 								"1"
-							],
-							"query": [
-								{
-									"key": "auth",
-									"value": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjMifQ.0wSN83vci8T9U6VtOhwbcFBdPifYEHaIP9xYGRgRzuA"
-								}
 							]
 						}
 					},
