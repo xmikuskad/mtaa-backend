@@ -141,10 +141,10 @@ fun Route.userRouting() {
             try {
                 val data = call.receive<RegisterInfo>()
 
-                /*if (data.name.length < MIN_NAME_LENGHT || data.email.length < MIN_LOGIN_LENGTH || data.password.length < MIN_LOGIN_LENGTH) {
+                if (data.name.length < MIN_NAME_LENGHT || data.email.length < MIN_LOGIN_LENGTH || data.password.length < MIN_LOGIN_LENGTH) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
-                }*/
+                }
 
                 val password = getSecurePassword(data.password)
                 if(password==null){
