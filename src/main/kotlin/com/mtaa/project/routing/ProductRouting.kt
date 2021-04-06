@@ -18,7 +18,7 @@ fun Route.productRouting() {
                 val data = call.receive<NameInfo>()
                 var page = parseInt(call, "page")
                 //Data validation
-                if (data.name.length < MIN_NAME_LENGHT || page == null) {
+                if (data.name.length < MIN_NAME_LENGTH || page == null) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }
@@ -83,7 +83,7 @@ fun Route.productRouting() {
             try {
                 val data = call.receive<AddedProduct>()
                 // Data validation
-                if (data.brand_id <= 0 || data.category_id <= 0 || data.price <= 0 || data.name.length < MIN_NAME_LENGHT) {
+                if (data.brand_id <= 0 || data.category_id <= 0 || data.price <= 0 || data.name.length < MIN_NAME_LENGTH) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }

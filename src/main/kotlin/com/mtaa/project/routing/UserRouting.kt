@@ -20,6 +20,7 @@ fun Route.userRouting() {
         try {
             val data = call.receive<LoginInfo>()
             var id = -1
+            var name = ""
 
             //Hash password
             val password = getSecurePassword(data.password)
@@ -29,11 +30,13 @@ fun Route.userRouting() {
             }
 
             transaction {
-                id = (getUser(data.email, password)?.id ?: -1).toString().toInt()
+                val user = getUser(data.email, password)
+                id = (user?.id ?: -1).toString().toInt()
+                name = user?.name ?: ""
             }
 
-            if (id > 0) { //User found, return auth key
-                call.respond(AuthInfo(getAuthKey(id.toString())))
+            if (id > 0 && name != "") { //User found, return auth key
+                call.respond(AuthInfo(name, getAuthKey(id.toString())))
             } else { //User not found in DB
                 call.respond(HttpStatusCode.NotFound)
             }
@@ -176,7 +179,7 @@ fun Route.userRouting() {
                 val data = call.receive<RegisterInfo>()
 
                 //Data validation
-                if (data.name.length < MIN_NAME_LENGHT || data.email.length < MIN_LOGIN_LENGTH || data.password.length < MIN_LOGIN_LENGTH) {
+                if (data.name.length < MIN_NAME_LENGTH || data.email.length < MIN_LOGIN_LENGTH || data.password.length < MIN_LOGIN_LENGTH) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }

@@ -116,7 +116,7 @@ fun Route.categoryRouting() {
             try {
                 val data = call.receive<NameInfo>()
                 //Validation
-                if (data.name.length < MIN_NAME_LENGHT) {
+                if (data.name.length < MIN_NAME_LENGTH) {
                     call.respond(HttpStatusCode.BadRequest)
                     return@post
                 }

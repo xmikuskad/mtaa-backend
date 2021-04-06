@@ -294,7 +294,7 @@ fun createReview(reviewPostInfo: ReviewPostInfo, auth: Int): Status {
         }
     }
 
-    //Recalculating product scora base on review score
+    //Recalculating product score based on review score
     val numberOfReviews = Reviews.select { Reviews.product eq product.id }.count()
     val productScore = product.score
 
@@ -313,7 +313,7 @@ fun updateReview(reviewPutInfo: ReviewPutInfo, review_id: Int, auth: Int): Statu
         return Status.UNAUTHORIZED
     }
 
-    //Recalculating product scora base on review score
+    //Recalculating product score based on review score
     val product = review.product
     val numberOfReviews = Reviews.select { Reviews.product eq product.id }.count()
     val productScore = product.score
@@ -344,7 +344,7 @@ fun voteOnReview(auth: Int, review_id: Int, is_positive: Boolean): Status {
 
     val reviewOwner = review.user
 
-    //Check if vote is the same. If thats the case then delete it
+    //Check if vote is the same. If that's the case then delete it
     val sameVote = ReviewVote.find {
         (ReviewVotes.user eq user.id) and
                 (ReviewVotes.review eq review.id) and

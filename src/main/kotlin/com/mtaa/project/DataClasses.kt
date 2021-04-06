@@ -19,7 +19,7 @@ enum class Status {
  * Constants
  */
 
-const val MIN_NAME_LENGHT = 1 //Minimal character length for a name
+const val MIN_NAME_LENGTH = 1 //Minimal character length for a name
 const val PAGE_LIMIT = 5 //Number of products loading for one page
 const val DEFAULT_MIN = 0 //Minimal price
 const val MIN_LOGIN_LENGTH = 8 //Minimal character length for login email and password
@@ -32,7 +32,7 @@ const val MAX_SCORE = 100 //Maximum score value
 data class RegisterInfo(val name: String, val password: String, val email: String)
 data class LoginInfo(val password: String, val email: String)
 data class UserInfo(val name: String, val trust_score: Int, val reviews: MutableList<ReviewInfoItem>)
-data class AuthInfo(val key: String)
+data class AuthInfo(val name: String, val key: String)
 data class NameInfo(val name: String)
 
 /**

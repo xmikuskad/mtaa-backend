@@ -303,11 +303,11 @@ fun addVoteToReview(call: ApplicationCall, is_positive: Boolean): Status {
 
 //Input validation
 fun validateReview(text:String,score:Int,attributes: MutableList<ReviewAttributePostPutInfo>):Boolean {
-    if (attributes.equals(null) || text.length < MIN_NAME_LENGHT || score < DEFAULT_MIN || score > MAX_SCORE) {
+    if (attributes.equals(null) || text.length < MIN_NAME_LENGTH || score < DEFAULT_MIN || score > MAX_SCORE) {
         return false
     }
     for (attr in attributes) {
-        if (attr.text.length < MIN_NAME_LENGHT) {
+        if (attr.text.length < MIN_NAME_LENGTH) {
             return false
         }
     }
