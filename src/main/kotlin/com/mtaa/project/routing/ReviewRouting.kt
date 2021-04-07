@@ -60,16 +60,16 @@ fun Route.reviewRouting() {
                     createReview(data, id)
                 }
                 when (result) {
-                    Status.UNAUTHORIZED -> {
+                    -1 -> {
                         call.respond(HttpStatusCode.Unauthorized)
                         return@post
                     }
-                    Status.NOT_FOUND -> {
+                    -1 -> {
                         call.respond(HttpStatusCode.NotFound)
                         return@post
                     }
-                    Status.OK -> {
-                        call.respond(HttpStatusCode.OK)
+                    else -> {
+                        call.respond(ReviewIdInfo(result))
                         return@post
                     }
                 }

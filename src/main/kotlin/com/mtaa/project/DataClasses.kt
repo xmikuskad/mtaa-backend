@@ -86,7 +86,7 @@ data class ReviewAttributePostPutInfo(val text: String, val is_positive: Boolean
 
 data class ReviewPutInfo(val text: String, val attributes: MutableList<ReviewAttributePostPutInfo>, val score: Int)
 data class ReviewVotesInfo(val likes:Int, val dislikes:Int)
-
+data class ReviewIdInfo(val id:Int)
 
 /**
  * SQL tables for ORM

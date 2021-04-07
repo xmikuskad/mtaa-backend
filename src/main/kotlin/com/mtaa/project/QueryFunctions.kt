@@ -272,9 +272,9 @@ fun getPhotos(review_id: Int): List<Photo> {
     return Photo.wrapRows(photos).toList()
 }
 
-fun createReview(reviewPostInfo: ReviewPostInfo, auth: Int): Status {
-    val product = Product.findById(reviewPostInfo.product_id) ?: return Status.NOT_FOUND
-    val user = User.findById(auth) ?: return Status.UNAUTHORIZED
+fun createReview(reviewPostInfo: ReviewPostInfo, auth: Int): Int {
+    val product = Product.findById(reviewPostInfo.product_id) ?: return -1
+    val user = User.findById(auth) ?: return -2
 
     //Create review
     val newReview = Review.new {
@@ -301,7 +301,7 @@ fun createReview(reviewPostInfo: ReviewPostInfo, auth: Int): Status {
     val newProductScore = ((numberOfReviews * productScore) + reviewPostInfo.score) / (numberOfReviews + 1)
     product.score = newProductScore.toInt()
 
-    return Status.OK
+    return newReview.id.toString().toInt()
 }
 
 fun updateReview(reviewPutInfo: ReviewPutInfo, review_id: Int, auth: Int): Status {
