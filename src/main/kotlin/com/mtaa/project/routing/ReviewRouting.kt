@@ -64,7 +64,7 @@ fun Route.reviewRouting() {
                         call.respond(HttpStatusCode.Unauthorized)
                         return@post
                     }
-                    -1 -> {
+                    -2 -> {
                         call.respond(HttpStatusCode.NotFound)
                         return@post
                     }
