@@ -25,13 +25,15 @@ fun createUser(_name:String, _password:String, _email:String, _trust_score:Int):
 }
 
 fun updateUser(user:User, _name:String, _password:String, _email:String):Boolean {
-    val found = User.find { Users.id neq user.id and (Users.email eq _email)}.firstOrNull() ?:return false
+    val found = User.find { Users.id neq user.id and (Users.email eq _email)}.firstOrNull()
+    if(found != null)
+        return true
 
     user.password = _password
     user.email = _email
     user.name = _name
 
-    return true
+    return false
 }
 
 fun getUser(_email:String, _password: String): User? {
