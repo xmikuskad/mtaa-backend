@@ -89,7 +89,7 @@ fun Route.productRouting() {
                 }
 
                 val result = transaction {
-                    addProduct(data.name, data.price, data.category_id, data.brand_id)
+                    createProduct(data.name, data.price, data.category_id, data.brand_id)
                 }
                 if (!result) { // No category/brand found
                     call.respond(HttpStatusCode.NotFound)

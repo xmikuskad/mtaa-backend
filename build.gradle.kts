@@ -51,6 +51,9 @@ dependencies {
     runtimeOnly("io.jsonwebtoken:jjwt-impl:0.11.2")
     runtimeOnly("io.jsonwebtoken:jjwt-gson:0.11.2")
 
+    //data faker
+    implementation("io.github.serpro69:kotlin-faker:1.6.0")
+
     testImplementation("io.ktor:ktor-server-tests:$ktor_version")
 }
 

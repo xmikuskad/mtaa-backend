@@ -222,7 +222,7 @@ fun deleteProduct(_id: Int): Boolean {
     return true
 }
 
-fun addProduct(_name: String, _price: Int, category_ID: Int, brand_ID: Int): Boolean {
+fun createProduct(_name: String, _price: Int, category_ID: Int, brand_ID: Int): Boolean {
     val category = Category.findById(category_ID) ?: return false
     val brand =  Brand.findById(brand_ID) ?: return false
 
