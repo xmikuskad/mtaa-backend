@@ -443,7 +443,7 @@ fun getReviews(id: Int, paging: Int, _orderBy: String?, _orderType: String?, lis
                     .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
                 return Review.wrapRows(query).toList()
             }
-            val query = Reviews.select { Reviews.user eq id }.orderBy(Reviews.score, orderType)
+            val query = Reviews.select { Reviews.user eq id }.orderBy(Reviews.id, orderType)
                 .limit(PAGE_LIMIT, ((paging - 1) * PAGE_LIMIT).toLong())
             return Review.wrapRows(query).toList()
         }
