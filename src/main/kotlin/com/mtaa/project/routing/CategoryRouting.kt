@@ -64,6 +64,12 @@ fun Route.categoryRouting() {
                 page = 1
             }
 
+            val category = transaction { Category.findById(categoryID) }
+            if (category == null) {
+                call.respond(HttpStatusCode.NotFound)
+                return@get
+            }
+
             var products: List<Product> = listOf()
             try {
                 transaction {
@@ -91,12 +97,6 @@ fun Route.categoryRouting() {
                         return@get
                     }
                 }
-            }
-
-            //If we didnt find any suitable products
-            if (products.isEmpty()) {
-                call.respond(HttpStatusCode.NotFound)
-                return@get
             }
 
             val array: MutableList<ProductInfo> = mutableListOf()
