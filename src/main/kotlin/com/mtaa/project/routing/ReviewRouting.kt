@@ -7,6 +7,7 @@ import io.ktor.http.*
 import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.jetbrains.exposed.sql.transactions.transaction
 import java.lang.NullPointerException
 
@@ -14,6 +15,7 @@ enum class ReviewListType {
     USER_REVIEWS, PRODUCT_REVIEWS
 }
 
+@ExperimentalCoroutinesApi
 fun Route.reviewRouting() {
     route("/reviews") {
         get("{id}") {
@@ -150,10 +152,20 @@ fun Route.reviewRouting() {
                 }
                 Status.OK -> {
                     //Return number or likes and dislikes
-                    parseInt(call, "id")?.let { it1 -> getVotes(it1) }?.let { it2 -> call.respond(it2) }
+                    /*parseInt(call, "id")?.let { it1 -> getVotes(it1)
+                    }?.let {
+                            it2 -> call.respond(it2)
+                    }
                         ?: call.respond(
                             HttpStatusCode.InternalServerError
-                        )
+                        )*/
+
+                    val id = parseInt(call, "id")
+                    if(id!= null){
+                        val votes = getVotes(id)
+                        sendVotesUpdate(id,votes)
+                        call.respond(votes)
+                    }
                     return@put
                 }
                 Status.BAD_REQUEST -> {
@@ -174,10 +186,17 @@ fun Route.reviewRouting() {
                 }
                 Status.OK -> {
                     //Return number or likes and dislikes
-                    parseInt(call, "id")?.let { it1 -> getVotes(it1) }?.let { it2 -> call.respond(it2) }
+                    /*parseInt(call, "id")?.let { it1 -> getVotes(it1) }?.let { it2 -> call.respond(it2) }
                         ?: call.respond(
                             HttpStatusCode.InternalServerError
-                        )
+                        )*/
+
+                    val id = parseInt(call, "id")
+                    if(id!= null){
+                        val votes = getVotes(id)
+                        sendVotesUpdate(id,votes)
+                        call.respond(votes)
+                    }
                     return@put
                 }
                 Status.BAD_REQUEST -> {
