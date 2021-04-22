@@ -7,7 +7,12 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.SendChannel
 import java.lang.Exception
 
-var connectedClients : HashMap<Int,MutableList<SendChannel<Frame>>> = HashMap()
+var votesClients : HashMap<Int,MutableList<SendChannel<Frame>>> = HashMap()
+var mainMenuClients : MutableList<SendChannel<Frame>> = mutableListOf()
+
+const val VOTES_COMMAND = "votes"
+const val MENU_COMMAND = "menu"
+const val LOAD_COMMAND = "load"
 
 fun Route.websocketRouting() {
     webSocket("/votes") {
@@ -16,22 +21,45 @@ fun Route.websocketRouting() {
                 is Frame.Text -> {
                     val text = frame.readText()
 
-                    println("GOT $text")
                     val recieved = text.split(" ")
-                    if(recieved.size <=1)
+                    if (recieved.size != 2 && recieved[0] != VOTES_COMMAND) {
                         return@webSocket
-
-                    val id = recieved[1].toInt()    //Review ID
-
-                    if(connectedClients[id] != null) {
-                        println("Adding")
-                        connectedClients[id]?.add(outgoing)
-                    }
-                    else {
-                        println("Creating")
-                        connectedClients[id] = mutableListOf(outgoing)
                     }
 
+                    var id: Int
+                    try {
+                        id = recieved[1].toInt()    //Review ID
+                    } catch (e: Exception) {
+                        println(e.stackTraceToString())
+                        outgoing.send(Frame.Text("WRONG ID"))
+                        return@webSocket
+                    }
+
+                    if (votesClients[id] != null) {
+                        votesClients[id]?.add(outgoing)
+                    } else {
+                        votesClients[id] = mutableListOf(outgoing)
+                    }
+
+                    //This is not mandatory
+                    outgoing.send(Frame.Text("CONNECTED"))
+                }
+            }
+        }
+    }
+
+    webSocket("/reviews") {
+        for (frame in incoming) {
+            when (frame) {
+                is Frame.Text -> {
+                    val text = frame.readText()
+                    val recieved = text.split(" ")
+
+                    if(recieved[0] == MENU_COMMAND) {
+                        mainMenuClients.add(outgoing)
+                    }
+
+                    //This is not mandatory
                     outgoing.send(Frame.Text("CONNECTED"))
                 }
             }
@@ -39,32 +67,39 @@ fun Route.websocketRouting() {
     }
 }
 
+//Called after likes/dislike update
 @ExperimentalCoroutinesApi
 fun sendVotesUpdate(id: Int, votes: ReviewVotesInfo) {
-    println("Called $id")
-
     CoroutineScope(Dispatchers.IO).launch {
-        if (connectedClients[id] != null) {
-            for (item in connectedClients[id]!!) {
-                //Delete closed connection
-                if (item.isClosedForSend) {
-                    println("Remove close connection")
-                    connectedClients[id]?.remove(item)
-                    continue
-                }
-
+        if (votesClients[id] != null) {
+            //Delete closed connection
+            votesClients[id]!!.removeAll {it.isClosedForSend}
+            for (item in votesClients[id]!!) {
                 //Send votes data
                 try {
-                    println("Sending data")
                     item.send(Frame.Text("${votes.likes} ${votes.dislikes}"))
                 } catch (e: Exception) {
                     println(e.stackTraceToString())
                 }
             }
-            println("Done sending")
         }
-        else {
-            println("Null hashmap")
+    }
+}
+
+//Called after review update, delete or add
+@ExperimentalCoroutinesApi
+fun sendRecentReviewUpdate() {
+    CoroutineScope(Dispatchers.IO).launch {
+        //Delete closed connection
+        mainMenuClients.removeAll {it.isClosedForSend}
+
+        for (item in mainMenuClients) {
+            //Send votes data
+            try {
+                item.send(Frame.Text(LOAD_COMMAND))
+            } catch (e: Exception) {
+                println(e.stackTraceToString())
+            }
         }
     }
 }

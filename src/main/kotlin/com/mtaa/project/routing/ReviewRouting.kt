@@ -71,6 +71,7 @@ fun Route.reviewRouting() {
                         return@post
                     }
                     else -> {
+                        sendRecentReviewUpdate()
                         call.respond(ReviewIdInfo(result))
                         return@post
                     }
@@ -123,6 +124,8 @@ fun Route.reviewRouting() {
                         return@put
                     }
                     Status.OK -> {
+                        println("????")
+                        sendRecentReviewUpdate()
                         call.respond(HttpStatusCode.OK)
                         return@put
                     }
@@ -152,14 +155,6 @@ fun Route.reviewRouting() {
                 }
                 Status.OK -> {
                     //Return number or likes and dislikes
-                    /*parseInt(call, "id")?.let { it1 -> getVotes(it1)
-                    }?.let {
-                            it2 -> call.respond(it2)
-                    }
-                        ?: call.respond(
-                            HttpStatusCode.InternalServerError
-                        )*/
-
                     val id = parseInt(call, "id")
                     if(id!= null){
                         val votes = getVotes(id)
@@ -185,12 +180,6 @@ fun Route.reviewRouting() {
                     return@put
                 }
                 Status.OK -> {
-                    //Return number or likes and dislikes
-                    /*parseInt(call, "id")?.let { it1 -> getVotes(it1) }?.let { it2 -> call.respond(it2) }
-                        ?: call.respond(
-                            HttpStatusCode.InternalServerError
-                        )*/
-
                     val id = parseInt(call, "id")
                     if(id!= null){
                         val votes = getVotes(id)
@@ -231,6 +220,7 @@ fun Route.reviewRouting() {
                     return@delete
                 }
                 Status.OK -> {
+                    sendRecentReviewUpdate()
                     call.respond(HttpStatusCode.OK)
                     return@delete
                 }
